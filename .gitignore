@@ -1,0 +1,5 @@
+source/packages
+source/bin
+source/obj
+source/Scripts/*.map
+package/Content
