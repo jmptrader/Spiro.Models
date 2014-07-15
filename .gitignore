@@ -3,3 +3,8 @@ source/bin
 source/obj
 source/Scripts/*.map
 source/Spiro.Models.v12.suo
+source/Scripts/spiro.config.d.ts
+source/Scripts/spiro.models.d.ts
+source/Scripts/spiro.models.helpers.d.ts
+source/Scripts/spiro.models.shims.d.ts
+source/Spiro.Models.csproj.user
