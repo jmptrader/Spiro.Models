@@ -30,13 +30,13 @@ module Spiro {
 
     // interfaces 
 
-    export interface HateoasModel {
+    export interface IHateoasModel {
         hateoasUrl: string;
         method: string;
         url: any;
     }
 
-    export interface Extensions {
+    export interface IExtensions {
         friendlyName: string;
         description: string;
         returnType: string;
@@ -51,7 +51,7 @@ module Spiro {
         minLength : number;
     }
 
-    export interface OptionalCapabilities {
+    export interface IOptionalCapabilities {
         blobsClobs: string;
         deleteObjects: string;
         domainModel: string;
@@ -226,17 +226,17 @@ module Spiro {
         }
     }
 
-    export interface ValueMap {
+    export interface IValueMap {
         [index: string]: Value;
     }
 
-    export interface ErrorValue {
+    export interface IErrorValue {
         value: Value;
         invalidReason: string;
     }
 
-    export interface ErrorValueMap {
-        [index: string]: ErrorValue;
+    export interface IErrorValueMap {
+        [index: string]: IErrorValue;
     }
 
     // helper class for results 
@@ -278,16 +278,16 @@ module Spiro {
         constructor(public wrapped) { }
 
         links(): Links {
-            return Links.WrapLinks(this.wrapped.links);
+            return Links.wrapLinks(this.wrapped.links);
         }
 
-        extensions(): Extensions {
+        extensions(): IExtensions {
             return this.wrapped.extensions;
         }
     }
 
     // base class for all representations that can be directly loaded from the server 
-    export class HateoasModelBase extends HateoasModelBaseShim implements HateoasModel {
+    export class HateoasModelBase extends HateoasModelBaseShim implements IHateoasModel {
         constructor(object?) {
             super(object);
         }
@@ -304,8 +304,8 @@ module Spiro {
             super(map);
         }
 
-        valuesMap(): ErrorValueMap {
-            var vs: ErrorValueMap = {};
+        valuesMap(): IErrorValueMap {
+            var vs: IErrorValueMap = {};
 
             // distinguish between value map and persist map 
             var map = this.attributes.members ? this.attributes.members : this.attributes;
@@ -313,7 +313,7 @@ module Spiro {
             for (var v in map) {
 
                 if (map[v].hasOwnProperty("value")) {
-                    var ev: ErrorValue = {
+                    var ev: IErrorValue = {
                         value: new Value(map[v].value),
                         invalidReason: map[v].invalidReason
                     };
@@ -330,7 +330,7 @@ module Spiro {
     }
 
 
-    export class UpdateMap extends ArgumentMap implements HateoasModel {
+    export class UpdateMap extends ArgumentMap implements IHateoasModel {
         constructor(private domainObject: DomainObjectRepresentation, map: Object) {
             super(map, domainObject, domainObject.instanceId());
 
@@ -352,14 +352,14 @@ module Spiro {
             return new ErrorMap(map, statusCode, warnings);
         }
 
-        properties(): ValueMap {
+        properties(): IValueMap {
             var pps = {};
 
             for (var p in this.attributes) {
                 pps[p] = new Value(this.attributes[p].value);
             }
 
-            return <ValueMap>pps;
+            return <IValueMap>pps;
         }
 
         setProperty(name: string, value: Value) {
@@ -367,7 +367,7 @@ module Spiro {
         }
     }
 
-    export class AddToRemoveFromMap extends ArgumentMap implements HateoasModel {
+    export class AddToRemoveFromMap extends ArgumentMap implements IHateoasModel {
         constructor(private collectionResource: CollectionRepresentation, map: Object, add: boolean) {
             super(map, collectionResource, collectionResource.instanceId());
 
@@ -391,7 +391,7 @@ module Spiro {
         }
     }
 
-    export class ModifyMap extends ArgumentMap implements HateoasModel {
+    export class ModifyMap extends ArgumentMap implements IHateoasModel {
         constructor(private propertyResource: PropertyRepresentation, map: Object) {
             super(map, propertyResource, propertyResource.instanceId());
 
@@ -416,7 +416,7 @@ module Spiro {
         }
     }
 
-    export class ClearMap extends ArgumentMap implements HateoasModel {
+    export class ClearMap extends ArgumentMap implements IHateoasModel {
         constructor(propertyResource: PropertyRepresentation) {
             super({}, propertyResource, propertyResource.instanceId());
 
@@ -429,7 +429,7 @@ module Spiro {
     }
 
     // helper - collection of Links 
-    export class Links extends CollectionShim implements HateoasModel {
+    export class Links extends CollectionShim implements IHateoasModel {
 
         // cannot use constructor to initialise as model property is not yet set and so will 
         // not create members of correct type 
@@ -452,7 +452,7 @@ module Spiro {
             return response.value;
         }
 
-        static WrapLinks(links: any): Links {
+        static wrapLinks(links: any): Links {
             var ll = new Links();
             ll.add(links);
             return ll;
@@ -481,11 +481,11 @@ module Spiro {
         private lazyLinks: Links; 
 
         links(): Links {
-            this.lazyLinks = this.lazyLinks || Links.WrapLinks(this.get("links"));
+            this.lazyLinks = this.lazyLinks || Links.wrapLinks(this.get("links"));
             return this.lazyLinks;
         }
 
-        extensions(): Extensions {
+        extensions(): IExtensions {
             return this.get("extensions");
         }
     }
@@ -532,17 +532,17 @@ module Spiro {
         }
 
         // properties 
-        choices(): ValueMap {
+        choices(): IValueMap {
 
             // use custom choices extension by preference 
             // todo wrap extensions 
             if (this.extensions()['x-ro-nof-choices']) {            
-                return _.object<ValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
             }
 
             if (this.wrapped.choices) {
                 var values = _.map(this.wrapped.choices, (item) => new Value(item));
-                return _.object<ValueMap>(_.map(values, (v) => [v.toString(), v]));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -570,7 +570,7 @@ module Spiro {
 
     }
 
-    export interface ParameterMap {
+    export interface IParameterMap {
         [index: string]: Parameter;
     }
 
@@ -608,7 +608,7 @@ module Spiro {
             return this.get("id");
         }
 
-        private parameterMap: ParameterMap;
+        private parameterMap: IParameterMap;
 
         private initParameterMap(): void {
 
@@ -624,7 +624,7 @@ module Spiro {
             }
         }
 
-        parameters(): ParameterMap {
+        parameters(): IParameterMap {
             this.initParameterMap();
             return this.parameterMap;
         }
@@ -634,7 +634,7 @@ module Spiro {
         }
     }
 
-    export interface ListOrCollection {
+    export interface IListOrCollection {
         value(): Links;
     }
 
@@ -666,12 +666,12 @@ module Spiro {
             return this.get("id");
         }
 
-        choices(): ValueMap {
+        choices(): IValueMap {
           
             var ch = this.get("choices");
             if (ch) {
                 var values = _.map(ch, (item) => new Value(item));
-                return _.object<ValueMap>(_.map(values, (v) => [v.toString(), v]));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -688,13 +688,13 @@ module Spiro {
             val.set(this.attributes, name);    
         }
 
-        setArguments(args : ValueMap) {
+        setArguments(args : IValueMap) {
             _.each(args, (arg, key) => this.setArgument(key, arg)); 
         }
     }
 
     // matches a collection representation 17.0 
-    export class CollectionRepresentation extends ResourceRepresentation implements ListOrCollection {
+    export class CollectionRepresentation extends ResourceRepresentation implements IListOrCollection {
 
         // links 
         selfLink(): Link {
@@ -755,7 +755,7 @@ module Spiro {
         }
 
         value(): Links {
-            return Links.WrapLinks(this.get("value"));
+            return Links.wrapLinks(this.get("value"));
         }
 
         disabledReason(): string {
@@ -832,18 +832,18 @@ module Spiro {
             return new Value(this.get("value"));
         }
 
-        choices(): ValueMap{
+        choices(): IValueMap{
 
             // use custom choices extension by preference 
             // todo wrap extensions 
             if (this.extensions()['x-ro-nof-choices']) {
-                return _.object<ValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
             }
 
             var ch = this.get("choices");
             if (ch) {
                 var values = _.map(ch, (item) => new Value(item));
-                return _.object<ValueMap>(_.map(values, (v) => [v.toString(), v]));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -891,7 +891,7 @@ module Spiro {
             return isScalarType(this.extensions().returnType);
         }
 
-        static WrapMember(toWrap, parent): Member {
+        static wrapMember(toWrap, parent): Member {
 
             if (toWrap.memberType === "property") {
                 return new PropertyMember(toWrap, parent);
@@ -943,18 +943,18 @@ module Spiro {
             return !!this.promptLink();
         }
 
-        choices(): ValueMap {
+        choices(): IValueMap {
 
             // use custom choices extension by preference 
             // todo wrap extensions 
             if (this.extensions()['x-ro-nof-choices']) {
-                return _.object<ValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
             }
 
             var ch = this.wrapped.choices;
             if (ch) {
                 var values = _.map(ch, (item) => new Value(item));
-                return _.object<ValueMap>(_.map(values, (v) => [v.toString(), v]));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -1002,19 +1002,19 @@ module Spiro {
         }
     }
 
-    export interface MemberMap {
+    export interface IMemberMap {
         [index: string]: Member;
     }
 
-    export interface PropertyMemberMap {
+    export interface IPropertyMemberMap {
         [index: string]: PropertyMember;
     }
 
-    export interface CollectionMemberMap {
+    export interface ICollectionMemberMap {
         [index: string]: CollectionMember;
     }
 
-    export interface ActionMemberMap {
+    export interface IActionMemberMap {
         [index: string]: ActionMember;
     }
 
@@ -1043,21 +1043,21 @@ module Spiro {
         }
 
         links(): Links {
-            return Links.WrapLinks(this.get("links"));
+            return Links.wrapLinks(this.get("links"));
         }
 
         instanceId(): string {
             return this.get("instanceId");
         }
 
-        extensions(): Extensions {
+        extensions(): IExtensions {
             return this.get("extensions");
         }
 
-        private memberMap: MemberMap;
-        private propertyMemberMap: PropertyMemberMap;
-        private collectionMemberMap: CollectionMemberMap;
-        private actionMemberMap: ActionMemberMap;
+        private memberMap: IMemberMap;
+        private propertyMemberMap: IPropertyMemberMap;
+        private collectionMemberMap: ICollectionMemberMap;
+        private actionMemberMap: IActionMemberMap;
 
         private resetMemberMaps() {
             this.memberMap = {};
@@ -1068,7 +1068,7 @@ module Spiro {
             var members = this.get("members");
 
             for (var m in members) {
-                var member = Member.WrapMember(members[m], this);
+                var member = Member.wrapMember(members[m], this);
                 this.memberMap[m] = member;
 
                 if (member.memberType() === "property") {
@@ -1089,22 +1089,22 @@ module Spiro {
             }
         }
 
-        members(): MemberMap {
+        members(): IMemberMap {
             this.initMemberMaps();
             return this.memberMap;
         }
 
-        propertyMembers(): PropertyMemberMap {
+        propertyMembers(): IPropertyMemberMap {
             this.initMemberMaps();
             return this.propertyMemberMap;
         }
 
-        collectionMembers(): CollectionMemberMap {
+        collectionMembers(): ICollectionMemberMap {
             this.initMemberMaps();
             return this.collectionMemberMap;
         }
 
-        actionMembers(): ActionMemberMap {
+        actionMembers(): IActionMemberMap {
             this.initMemberMaps();
             return this.actionMemberMap;
         }
@@ -1191,7 +1191,7 @@ module Spiro {
     }
 
     // matches List Representation 11.0
-    export class ListRepresentation extends ResourceRepresentation implements ListOrCollection {
+    export class ListRepresentation extends ResourceRepresentation implements IListOrCollection {
 
         constructor(object?) {
             super(object);
@@ -1209,7 +1209,7 @@ module Spiro {
 
         // list of links to services 
         value(): Links {
-            return Links.WrapLinks(this.get("value"));
+            return Links.wrapLinks(this.get("value"));
         }
 
       
@@ -1237,7 +1237,7 @@ module Spiro {
     }
 
     // matches Objects of Type Resource 9.0 
-    export class PersistMap extends ArgumentMap implements HateoasModel {
+    export class PersistMap extends ArgumentMap implements IHateoasModel {
 
         constructor(private domainObject: DomainObjectRepresentation, map: Object) {
             super(map, domainObject, domainObject.instanceId());
@@ -1290,7 +1290,7 @@ module Spiro {
             return this.get("implVersion");
         }
 
-        optionalCapabilities(): OptionalCapabilities {
+        optionalCapabilities(): IOptionalCapabilities {
             return this.get("optionalCapabilities");
         }
     }
@@ -1426,18 +1426,18 @@ module Spiro {
             return this.get("arguments");
         }
 
-        extensions(): Extensions {
+        extensions(): IExtensions {
             return this.get("extensions");
         }
 
-        copyToHateoasModel(hateoasModel: HateoasModel): void {
+        copyToHateoasModel(hateoasModel: IHateoasModel): void {
             hateoasModel.hateoasUrl = this.href();
             hateoasModel.method = this.method();
         }
 
-        private getHateoasTarget(targetType): HateoasModel {
+        private getHateoasTarget(targetType): IHateoasModel {
             var matchingType = this.repTypeToModel[targetType];
-            var target: HateoasModel = new matchingType({});
+            var target: IHateoasModel = new matchingType({});
             return target;
         }
 
@@ -1456,7 +1456,7 @@ module Spiro {
         }
 
         // get the object that this link points to 
-        getTarget(): HateoasModel {
+        getTarget(): IHateoasModel {
             var target = this.getHateoasTarget(this.type().representationType);
             this.copyToHateoasModel(target);
             return target;

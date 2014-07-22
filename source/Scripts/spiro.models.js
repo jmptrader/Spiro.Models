@@ -229,7 +229,7 @@ var Spiro;
             this.wrapped = wrapped;
         }
         NestedRepresentation.prototype.links = function () {
-            return Links.WrapLinks(this.wrapped.links);
+            return Links.wrapLinks(this.wrapped.links);
         };
 
         NestedRepresentation.prototype.extensions = function () {
@@ -411,7 +411,7 @@ var Spiro;
             return response.value;
         };
 
-        Links.WrapLinks = function (links) {
+        Links.wrapLinks = function (links) {
             var ll = new Links();
             ll.add(links);
             return ll;
@@ -438,7 +438,7 @@ var Spiro;
             _super.call(this, object);
         }
         ResourceRepresentation.prototype.links = function () {
-            this.lazyLinks = this.lazyLinks || Links.WrapLinks(this.get("links"));
+            this.lazyLinks = this.lazyLinks || Links.wrapLinks(this.get("links"));
             return this.lazyLinks;
         };
 
@@ -724,7 +724,7 @@ var Spiro;
         };
 
         CollectionRepresentation.prototype.value = function () {
-            return Links.WrapLinks(this.get("value"));
+            return Links.wrapLinks(this.get("value"));
         };
 
         CollectionRepresentation.prototype.disabledReason = function () {
@@ -870,7 +870,7 @@ var Spiro;
             return isScalarType(this.extensions().returnType);
         };
 
-        Member.WrapMember = function (toWrap, parent) {
+        Member.wrapMember = function (toWrap, parent) {
             if (toWrap.memberType === "property") {
                 return new PropertyMember(toWrap, parent);
             }
@@ -1013,7 +1013,7 @@ var Spiro;
         };
 
         DomainObjectRepresentation.prototype.links = function () {
-            return Links.WrapLinks(this.get("links"));
+            return Links.wrapLinks(this.get("links"));
         };
 
         DomainObjectRepresentation.prototype.instanceId = function () {
@@ -1033,7 +1033,7 @@ var Spiro;
             var members = this.get("members");
 
             for (var m in members) {
-                var member = Member.WrapMember(members[m], this);
+                var member = Member.wrapMember(members[m], this);
                 this.memberMap[m] = member;
 
                 if (member.memberType() === "property") {
@@ -1175,7 +1175,7 @@ var Spiro;
 
         // list of links to services
         ListRepresentation.prototype.value = function () {
-            return Links.WrapLinks(this.get("value"));
+            return Links.wrapLinks(this.get("value"));
         };
         return ListRepresentation;
     })(ResourceRepresentation);
