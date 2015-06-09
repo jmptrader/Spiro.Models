@@ -135,7 +135,7 @@ var Spiro;
                 var ss = _.map(this.list(), function (v) {
                     return v.toString();
                 });
-                if (ss.length == 0) {
+                if (ss.length === 0) {
                     return "";
                 }
                 return _.reduce(ss, function (m, s) {
@@ -174,19 +174,19 @@ var Spiro;
             this.resultType = resultType;
         }
         Result.prototype.object = function () {
-            if (!this.isNull() && this.resultType == "object") {
+            if (!this.isNull() && this.resultType === "object") {
                 return new DomainObjectRepresentation(this.wrapped);
             }
             return null;
         };
         Result.prototype.list = function () {
-            if (!this.isNull() && this.resultType == "list") {
+            if (!this.isNull() && this.resultType === "list") {
                 return new ListRepresentation(this.wrapped);
             }
             return null;
         };
         Result.prototype.scalar = function () {
-            if (!this.isNull() && this.resultType == "scalar") {
+            if (!this.isNull() && this.resultType === "scalar") {
                 return new ScalarValueRepresentation(this.wrapped);
             }
             return null;
@@ -195,7 +195,7 @@ var Spiro;
             return this.wrapped == null;
         };
         Result.prototype.isVoid = function () {
-            return (this.resultType == "void");
+            return (this.resultType === "void");
         };
         return Result;
     })();
@@ -1158,7 +1158,7 @@ var Spiro;
                 "object-action": ActionRepresentation,
                 "action-result": ActionResultRepresentation,
                 "error": ErrorRepresentation,
-                "prompt": PromptRepresentation,
+                "prompt": PromptRepresentation
             };
         }
         Link.prototype.href = function () {

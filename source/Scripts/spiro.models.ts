@@ -191,7 +191,7 @@ module Spiro {
                     return v.toString();
                 });
 
-                if (ss.length == 0) {
+                if (ss.length === 0) {
                     return "";
                 }
 
@@ -244,21 +244,21 @@ module Spiro {
         constructor(public wrapped, private resultType: string) { }
 
         object(): DomainObjectRepresentation {
-            if (!this.isNull() && this.resultType == "object") {
+            if (!this.isNull() && this.resultType === "object") {
                 return new DomainObjectRepresentation(this.wrapped);
             }
             return null;
         }
 
         list(): ListRepresentation {
-            if (!this.isNull() && this.resultType == "list") {
+            if (!this.isNull() && this.resultType === "list") {
                 return new ListRepresentation(this.wrapped);
             }
             return null;
         }
 
         scalar(): ScalarValueRepresentation {
-            if (!this.isNull() && this.resultType == "scalar") {
+            if (!this.isNull() && this.resultType === "scalar") {
                 return new ScalarValueRepresentation(this.wrapped);
             }
             return null;
@@ -269,7 +269,7 @@ module Spiro {
         }
 
         isVoid(): boolean {
-            return (this.resultType == "void");
+            return (this.resultType === "void");
         }
     }
 
@@ -1452,7 +1452,7 @@ module Spiro {
             "object-action": ActionRepresentation,
             "action-result": ActionResultRepresentation,
             "error": ErrorRepresentation,
-            "prompt": PromptRepresentation,
+            "prompt": PromptRepresentation
         }
 
         // get the object that this link points to 
