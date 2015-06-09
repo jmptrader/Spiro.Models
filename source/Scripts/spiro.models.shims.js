@@ -1,4 +1,10 @@
-﻿//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//Copyright 2013-2014 Naked Objects Group Ltd
+//Licensed under the Apache License, Version 2.0(the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //See the License for the specific language governing permissions and
 //limitations under the License.
 var __extends = this.__extends || function (d, b) {
@@ -11,7 +17,7 @@ var __extends = this.__extends || function (d, b) {
 // spiro.models defines a set of classes that correspond directly to the JSON representations returned by Restful Objects
 // resources.  These classes provide convenient methods for navigating the contents of those representations, and for
 // following links to other resources.
-// null  version of shims
+// null  version of shims 
 var Spiro;
 (function (Spiro) {
     var ModelShim = (function () {
@@ -21,7 +27,6 @@ var Spiro;
         ModelShim.prototype.url = function () {
             return "";
         };
-
         ModelShim.prototype.get = function (attributeName) {
             return this.attributes[attributeName];
         };
@@ -31,8 +36,7 @@ var Spiro;
         return ModelShim;
     })();
     Spiro.ModelShim = ModelShim;
-
-    // base class for all representations that can be directly loaded from the server
+    // base class for all representations that can be directly loaded from the server 
     var HateoasModelBaseShim = (function (_super) {
         __extends(HateoasModelBaseShim, _super);
         function HateoasModelBaseShim(object) {
@@ -44,37 +48,28 @@ var Spiro;
         HateoasModelBaseShim.prototype.url = function () {
             return (this.hateoasUrl || _super.prototype.url.call(this)) + this.suffix;
         };
-        HateoasModelBaseShim.prototype.onError = function (map, statusCode, warnings) {
-        };
-        HateoasModelBaseShim.prototype.preFetch = function () {
-        };
+        HateoasModelBaseShim.prototype.onError = function (map, statusCode, warnings) { };
+        HateoasModelBaseShim.prototype.preFetch = function () { };
         return HateoasModelBaseShim;
     })(ModelShim);
     Spiro.HateoasModelBaseShim = HateoasModelBaseShim;
-
     var ArgumentMap = (function (_super) {
         __extends(ArgumentMap, _super);
         function ArgumentMap(map, parent, id) {
             _super.call(this, map);
             this.id = id;
         }
-        ArgumentMap.prototype.onChange = function () {
-        };
-        ArgumentMap.prototype.onError = function (map, statusCode, warnings) {
-        };
+        ArgumentMap.prototype.onChange = function () { };
+        ArgumentMap.prototype.onError = function (map, statusCode, warnings) { };
         return ArgumentMap;
     })(HateoasModelBaseShim);
     Spiro.ArgumentMap = ArgumentMap;
-
     var CollectionShim = (function () {
         function CollectionShim(object) {
         }
-        CollectionShim.prototype.url = function () {
-        };
-
+        CollectionShim.prototype.url = function () { };
         CollectionShim.prototype.add = function (models, options) {
             this.models = this.models || [];
-
             for (var i = 0; i < models.length; i++) {
                 var m = new this.model(models[i]);
                 this.models.push(m);
