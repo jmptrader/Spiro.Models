@@ -330,6 +330,28 @@ var Spiro;
         return ModifyMap;
     })(Spiro.ArgumentMap);
     Spiro.ModifyMap = ModifyMap;
+    var ModifyMapv11 = (function (_super) {
+        __extends(ModifyMapv11, _super);
+        function ModifyMapv11(propertyResource, id, map) {
+            _super.call(this, map, propertyResource, id);
+            this.propertyResource = propertyResource;
+            propertyResource.modifyLink().copyToHateoasModel(this);
+            this.setValue(propertyResource.value());
+        }
+        ModifyMapv11.prototype.onChange = function () {
+            // if the update map changes as a result of server changes (eg title changes) update the 
+            // associated property
+            this.propertyResource.setFromModifyMap(this);
+        };
+        ModifyMapv11.prototype.onError = function (map, statusCode, warnings) {
+            return new ErrorMap(map, statusCode, warnings);
+        };
+        ModifyMapv11.prototype.setValue = function (value) {
+            value.set(this.attributes);
+        };
+        return ModifyMapv11;
+    })(Spiro.ArgumentMap);
+    Spiro.ModifyMapv11 = ModifyMapv11;
     var ClearMap = (function (_super) {
         __extends(ClearMap, _super);
         function ClearMap(propertyResource) {
@@ -342,6 +364,18 @@ var Spiro;
         return ClearMap;
     })(Spiro.ArgumentMap);
     Spiro.ClearMap = ClearMap;
+    var ClearMapv11 = (function (_super) {
+        __extends(ClearMapv11, _super);
+        function ClearMapv11(propertyResource, id) {
+            _super.call(this, {}, propertyResource, id);
+            propertyResource.clearLink().copyToHateoasModel(this);
+        }
+        ClearMapv11.prototype.onError = function (map, statusCode, warnings) {
+            return new ErrorMap(map, statusCode, warnings);
+        };
+        return ClearMapv11;
+    })(Spiro.ArgumentMap);
+    Spiro.ClearMapv11 = ClearMapv11;
     // helper - collection of Links 
     var Links = (function (_super) {
         __extends(Links, _super);
@@ -743,6 +777,34 @@ var Spiro;
         function PropertyMember(wrapped, parent) {
             _super.call(this, wrapped, parent);
         }
+        // inlined 
+        PropertyMember.prototype.modifyLink = function () {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/modify");
+        };
+        PropertyMember.prototype.clearLink = function () {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/clear");
+        };
+        PropertyMember.prototype.modifyMap = function () {
+            return this.modifyLink().arguments();
+        };
+        PropertyMember.prototype.setFromModifyMap = function (map) {
+            for (var v in map.attributes) {
+                this.wrapped[v] = map.attributes[v];
+            }
+        };
+        PropertyMember.prototype.getModifyMap = function (id) {
+            if (this.modifyLink()) {
+                return new ModifyMapv11(this, id, this.modifyMap());
+            }
+            return null;
+        };
+        PropertyMember.prototype.getClearMap = function (id) {
+            if (this.clearLink()) {
+                return new ClearMapv11(this, id);
+            }
+            return null;
+        };
+        //
         PropertyMember.prototype.value = function () {
             return new Value(this.wrapped.value);
         };

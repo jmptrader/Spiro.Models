@@ -416,9 +416,46 @@ module Spiro {
         }
     }
 
+    export class ModifyMapv11 extends ArgumentMap implements IHateoasModel {
+        constructor(private propertyResource: PropertyMember, id : string, map: Object) {
+            super(map, propertyResource, id);
+
+            propertyResource.modifyLink().copyToHateoasModel(this);
+
+            this.setValue(propertyResource.value());
+        }
+
+        onChange() {
+            // if the update map changes as a result of server changes (eg title changes) update the 
+            // associated property
+            this.propertyResource.setFromModifyMap(this);
+        }
+
+        onError(map: Object, statusCode: string, warnings: string) {
+            return new ErrorMap(map, statusCode, warnings);
+        }
+
+        setValue(value: Value) {
+            value.set(this.attributes);
+        }
+    }
+
+
     export class ClearMap extends ArgumentMap implements IHateoasModel {
         constructor(propertyResource: PropertyRepresentation) {
             super({}, propertyResource, propertyResource.instanceId());
+
+            propertyResource.clearLink().copyToHateoasModel(this);
+        }
+
+        onError(map: Object, statusCode: string, warnings: string) {
+            return new ErrorMap(map, statusCode, warnings);
+        }
+    }
+
+    export class ClearMapv11 extends ArgumentMap implements IHateoasModel {
+        constructor(propertyResource: PropertyMember, id : string) {
+            super({}, propertyResource, id);
 
             propertyResource.clearLink().copyToHateoasModel(this);
         }
@@ -914,6 +951,45 @@ module Spiro {
         constructor(wrapped, parent) {
             super(wrapped, parent);
         }
+
+        // inlined 
+
+        modifyLink(): Link {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/modify");
+        }
+
+        clearLink(): Link {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/clear");
+        }
+
+        private modifyMap() {
+            return this.modifyLink().arguments();
+        }
+
+        setFromModifyMap(map: ModifyMapv11) {
+
+            for (var v in map.attributes) {
+                this.wrapped[v] = map.attributes[v];
+            }
+        }
+
+        getModifyMap(id : string): ModifyMapv11 {
+            if (this.modifyLink()) {
+                return new ModifyMapv11(this, id, this.modifyMap());
+            }
+            return null;
+        }
+
+        getClearMap(id : string): ClearMapv11 {
+            if (this.clearLink()) {
+                return new ClearMapv11(this, id);
+            }
+            return null;
+        }
+
+
+        //
+
 
         value(): Value {
             return new Value(this.wrapped.value);
