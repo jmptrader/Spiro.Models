@@ -987,6 +987,9 @@ module Spiro {
             return null;
         }
 
+        getPrompts(): PromptRepresentation {
+            return <PromptRepresentation> this.promptLink().getTarget();
+        }
 
         //
 

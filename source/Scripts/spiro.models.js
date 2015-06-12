@@ -804,6 +804,9 @@ var Spiro;
             }
             return null;
         };
+        PropertyMember.prototype.getPrompts = function () {
+            return this.promptLink().getTarget();
+        };
         //
         PropertyMember.prototype.value = function () {
             return new Value(this.wrapped.value);
