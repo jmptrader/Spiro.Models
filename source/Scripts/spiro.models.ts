@@ -1,12 +1,12 @@
-﻿//Copyright 2013-2014 Naked Objects Group Ltd
-//Licensed under the Apache License, Version 2.0(the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License.
+﻿//  Copyright 2013-2014 Naked Objects Group Ltd
+//  Licensed under the Apache License, Version 2.0(the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 
 // ABOUT THIS FILE:
 // spiro.models defines a set of classes that correspond directly to the JSON representations returned by Restful Objects
@@ -17,8 +17,9 @@
 /// <reference path="spiro.models.shims.ts" />
 /// <reference path="spiro.config.ts" />
 
-
 module Spiro {
+
+    "use strict";
 
     function isScalarType(typeName: string) {
         return typeName === "string" || typeName === "number" || typeName === "boolean" || typeName === "integer";
@@ -48,7 +49,7 @@ module Spiro {
         format: string;
         memberOrder: number;
         isService: boolean;
-        minLength : number;
+        minLength: number;
     }
 
     export interface IOptionalCapabilities {
@@ -78,8 +79,7 @@ module Spiro {
                 // namespaced 
                 this.ns = this.asString.substring(0, this.asString.indexOf("/") + 1);
                 postFix = this.asString.substring(this.asString.indexOf("/") + 1);
-            }
-            else {
+            } else {
                 postFix = this.asString;
             }
 
@@ -117,12 +117,12 @@ module Spiro {
             for (var i = 1; i < parms.length; i++) {
                 if (parms[i].trim().substring(0, 7) === "profile") {
                     this.profile = parms[i].trim();
-                    var profileValue = (this.profile.split("=")[1].replace(/\"/g, '')).trim();
+                    const profileValue = (this.profile.split("=")[1].replace(/\"/g, "")).trim();
                     this.representationType = (profileValue.split("/")[1]).trim();
                 }
                 if (parms[i].trim().substring(0, 16) === "x-ro-domain-type") {
                     this.xRoDomainType = (parms[i]).trim();
-                    this.domainType = (this.xRoDomainType.split("=")[1].replace(/\"/g, '')).trim();
+                    this.domainType = (this.xRoDomainType.split("=")[1].replace(/\"/g, "")).trim();
                 }
             }
         }
@@ -175,7 +175,7 @@ module Spiro {
 
         list(): Value[] {
             if (this.isList()) {
-                return  _.map(this.wrapped, (i) => {
+                return _.map(this.wrapped, (i: any) => {
                     return new Value(i);
                 });
             }
@@ -187,7 +187,7 @@ module Spiro {
                 return this.link().title();
             }
             if (this.isList()) {
-                var ss =  _.map(this.list(), (v) => {
+                var ss = _.map(this.list(), (v: any) => {
                     return v.toString();
                 });
 
@@ -195,7 +195,7 @@ module Spiro {
                     return "";
                 }
 
-                return _.reduce(ss, (m : string , s : string) => {
+                return _.reduce(ss, (m: string, s: string) => {
                     return m + "-" + s;
                 });
             }
@@ -210,16 +210,14 @@ module Spiro {
             return (this.wrapped == null) ? "" : this.wrapped.toString();
         }
 
-        set (target: Object, name?: string) {
+        set(target: Object, name?: string) {
             if (name) {
                 var t = target[name] = {};
                 this.set(t);
-            }
-            else {
+            } else {
                 if (this.isReference()) {
                     target["value"] = { "href": this.link().href() };
-                }
-                else {
+                } else {
                     target["value"] = this.scalar();
                 }
             }
@@ -241,7 +239,7 @@ module Spiro {
 
     // helper class for results 
     export class Result {
-        constructor(public wrapped, private resultType: string) { }
+        constructor(public wrapped : any, private resultType: string) { }
 
         object(): DomainObjectRepresentation {
             if (!this.isNull() && this.resultType === "object") {
@@ -275,7 +273,7 @@ module Spiro {
 
     // base class for nested representations 
     export class NestedRepresentation {
-        constructor(public wrapped) { }
+        constructor(public wrapped : any) { }
 
         links(): Links {
             return Links.wrapLinks(this.wrapped.links);
@@ -288,7 +286,7 @@ module Spiro {
 
     // base class for all representations that can be directly loaded from the server 
     export class HateoasModelBase extends HateoasModelBaseShim implements IHateoasModel {
-        constructor(object?) {
+        constructor(object? : any) {
             super(object);
         }
 
@@ -297,7 +295,7 @@ module Spiro {
         }
     }
 
-   
+
     export class ErrorMap extends HateoasModelBase {
 
         constructor(map: Object, public statusCode: string, public warningMessage: string) {
@@ -336,7 +334,7 @@ module Spiro {
 
             domainObject.updateLink().copyToHateoasModel(this);
 
-            _.each(this.properties(), (value, key) => {
+            _.each(this.properties(), (value : Value, key : string) => {
                 this.setProperty(key, value);
             });
         }
@@ -358,7 +356,7 @@ module Spiro {
             //    pps[p] = new Value(this.attributes[p].value);
             //}
 
-            return <IValueMap>_.mapObject(this.attributes,(v) => new Value(v.value));
+            return <IValueMap>_.mapObject(this.attributes, (v : any) => new Value(v.value));
         }
 
         setProperty(name: string, value: Value) {
@@ -416,7 +414,7 @@ module Spiro {
     }
 
     export class ModifyMapv11 extends ArgumentMap implements IHateoasModel {
-        constructor(private propertyResource: PropertyMember, id : string, map: Object) {
+        constructor(private propertyResource: PropertyMember, id: string, map: Object) {
             super(map, propertyResource, id);
 
             propertyResource.modifyLink().copyToHateoasModel(this);
@@ -453,7 +451,7 @@ module Spiro {
     }
 
     export class ClearMapv11 extends ArgumentMap implements IHateoasModel {
-        constructor(propertyResource: PropertyMember, id : string) {
+        constructor(propertyResource: PropertyMember, id: string) {
             super({}, propertyResource, id);
 
             propertyResource.clearLink().copyToHateoasModel(this);
@@ -470,13 +468,13 @@ module Spiro {
         // cannot use constructor to initialise as model property is not yet set and so will 
         // not create members of correct type 
         constructor() {
-            super(); 
-            
+            super();
+
             this.url = () => {
                 return this.hateoasUrl;
             };
         }
-      
+
         hateoasUrl: string;
         method: string;
 
@@ -514,7 +512,7 @@ module Spiro {
             super(object);
         }
 
-        private lazyLinks: Links; 
+        private lazyLinks: Links;
 
         links(): Links {
             this.lazyLinks = this.lazyLinks || Links.wrapLinks(this.get("links"));
@@ -563,7 +561,7 @@ module Spiro {
 
     // matches 18.2.1
     export class Parameter extends NestedRepresentation {
-        constructor(wrapped, public parent : ActionRepresentation) {
+        constructor(wrapped, public parent: ActionRepresentation) {
             super(wrapped);
         }
 
@@ -572,8 +570,8 @@ module Spiro {
 
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {            
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
             }
 
             if (this.wrapped.choices) {
@@ -703,7 +701,7 @@ module Spiro {
         }
 
         choices(): IValueMap {
-          
+
             var ch = this.get("choices");
             if (ch) {
                 var values = _.map(ch, (item) => new Value(item));
@@ -721,11 +719,11 @@ module Spiro {
         }
 
         setArgument(name: string, val: Value) {
-            val.set(this.attributes, name);    
+            val.set(this.attributes, name);
         }
 
-        setArguments(args : IValueMap) {
-            _.each(args, (arg, key) => this.setArgument(key, arg)); 
+        setArguments(args: IValueMap) {
+            _.each(args, (arg, key) => this.setArgument(key, arg));
         }
     }
 
@@ -868,12 +866,12 @@ module Spiro {
             return new Value(this.get("value"));
         }
 
-        choices(): IValueMap{
+        choices(): IValueMap {
 
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
             }
 
             var ch = this.get("choices");
@@ -903,7 +901,7 @@ module Spiro {
 
     // base class for 14.4.1/2/3
     export class Member extends NestedRepresentation {
-        constructor(wrapped, public parent : DomainObjectRepresentation) {
+        constructor(wrapped, public parent: DomainObjectRepresentation) {
             super(wrapped);
         }
 
@@ -972,14 +970,14 @@ module Spiro {
             }
         }
 
-        getModifyMap(id : string): ModifyMapv11 {
+        getModifyMap(id: string): ModifyMapv11 {
             if (this.modifyLink()) {
                 return new ModifyMapv11(this, id, this.modifyMap());
             }
             return null;
         }
 
-        getClearMap(id : string): ClearMapv11 {
+        getClearMap(id: string): ClearMapv11 {
             if (this.clearLink()) {
                 return new ClearMapv11(this, id);
             }
@@ -1014,7 +1012,7 @@ module Spiro {
         }
 
         hasChoices(): boolean {
-            return this.wrapped.hasChoices; 
+            return this.wrapped.hasChoices;
         }
 
         hasPrompt(): boolean {
@@ -1025,8 +1023,8 @@ module Spiro {
 
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()['x-ro-nof-choices'], (v, key) => [key, new Value(v)]));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
             }
 
             var ch = this.wrapped.choices;
@@ -1151,11 +1149,9 @@ module Spiro {
 
                 if (member.memberType() === "property") {
                     this.propertyMemberMap[m] = <PropertyMember> member;
-                }
-                else if (member.memberType() === "collection") {
+                } else if (member.memberType() === "collection") {
                     this.collectionMemberMap[m] = <CollectionMember> member;
-                }
-                else if (member.memberType() === "action") {
+                } else if (member.memberType() === "action") {
                     this.actionMemberMap[m] = <ActionMember> member;
                 }
             }
@@ -1290,7 +1286,7 @@ module Spiro {
             return Links.wrapLinks(this.get("value"));
         }
 
-      
+
     }
 
     // matches the error representation 10.0 

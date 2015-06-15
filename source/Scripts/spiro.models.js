@@ -1,12 +1,12 @@
-//Copyright 2013-2014 Naked Objects Group Ltd
-//Licensed under the Apache License, Version 2.0(the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License.
+//  Copyright 2013-2014 Naked Objects Group Ltd
+//  Licensed under the Apache License, Version 2.0(the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -22,6 +22,7 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="spiro.config.ts" />
 var Spiro;
 (function (Spiro) {
+    "use strict";
     function isScalarType(typeName) {
         return typeName === "string" || typeName === "number" || typeName === "boolean" || typeName === "integer";
     }
@@ -69,12 +70,12 @@ var Spiro;
             for (var i = 1; i < parms.length; i++) {
                 if (parms[i].trim().substring(0, 7) === "profile") {
                     this.profile = parms[i].trim();
-                    var profileValue = (this.profile.split("=")[1].replace(/\"/g, '')).trim();
+                    var profileValue = (this.profile.split("=")[1].replace(/\"/g, "")).trim();
                     this.representationType = (profileValue.split("/")[1]).trim();
                 }
                 if (parms[i].trim().substring(0, 16) === "x-ro-domain-type") {
                     this.xRoDomainType = (parms[i]).trim();
-                    this.domainType = (this.xRoDomainType.split("=")[1].replace(/\"/g, '')).trim();
+                    this.domainType = (this.xRoDomainType.split("=")[1].replace(/\"/g, "")).trim();
                 }
             }
         };
@@ -465,8 +466,8 @@ var Spiro;
         Parameter.prototype.choices = function () {
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {
-                return _.object(_.map(this.extensions()['x-ro-nof-choices'], function (v, key) { return [key, new Value(v)]; }));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
             }
             if (this.wrapped.choices) {
                 var values = _.map(this.wrapped.choices, function (item) { return new Value(item); });
@@ -710,8 +711,8 @@ var Spiro;
         PropertyRepresentation.prototype.choices = function () {
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {
-                return _.object(_.map(this.extensions()['x-ro-nof-choices'], function (v, key) { return [key, new Value(v)]; }));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
             }
             var ch = this.get("choices");
             if (ch) {
@@ -832,8 +833,8 @@ var Spiro;
         PropertyMember.prototype.choices = function () {
             // use custom choices extension by preference 
             // todo wrap extensions 
-            if (this.extensions()['x-ro-nof-choices']) {
-                return _.object(_.map(this.extensions()['x-ro-nof-choices'], function (v, key) { return [key, new Value(v)]; }));
+            if (this.extensions()["x-ro-nof-choices"]) {
+                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
             }
             var ch = this.wrapped.choices;
             if (ch) {
