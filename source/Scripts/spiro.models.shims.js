@@ -48,10 +48,8 @@ var Spiro;
         HateoasModelBaseShim.prototype.url = function () {
             return (this.hateoasUrl || _super.prototype.url.call(this)) + this.suffix;
         };
-        HateoasModelBaseShim.prototype.onError = function (map, statusCode, warnings) {
-        };
-        HateoasModelBaseShim.prototype.preFetch = function () {
-        };
+        HateoasModelBaseShim.prototype.onError = function (map, statusCode, warnings) { };
+        HateoasModelBaseShim.prototype.preFetch = function () { };
         return HateoasModelBaseShim;
     })(ModelShim);
     Spiro.HateoasModelBaseShim = HateoasModelBaseShim;
@@ -61,18 +59,15 @@ var Spiro;
             _super.call(this, map);
             this.id = id;
         }
-        ArgumentMap.prototype.onChange = function () {
-        };
-        ArgumentMap.prototype.onError = function (map, statusCode, warnings) {
-        };
+        ArgumentMap.prototype.onChange = function () { };
+        ArgumentMap.prototype.onError = function (map, statusCode, warnings) { };
         return ArgumentMap;
     })(HateoasModelBaseShim);
     Spiro.ArgumentMap = ArgumentMap;
     var CollectionShim = (function () {
         function CollectionShim(object) {
         }
-        CollectionShim.prototype.url = function () {
-        };
+        CollectionShim.prototype.url = function () { };
         CollectionShim.prototype.add = function (models, options) {
             this.models = this.models || [];
             for (var i = 0; i < models.length; i++) {

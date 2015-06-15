@@ -257,13 +257,13 @@ var Spiro;
     var UpdateMap = (function (_super) {
         __extends(UpdateMap, _super);
         function UpdateMap(domainObject, map) {
+            var _this = this;
             _super.call(this, map, domainObject, domainObject.instanceId());
             this.domainObject = domainObject;
             domainObject.updateLink().copyToHateoasModel(this);
-            for (var member in this.properties()) {
-                var currentValue = domainObject.propertyMembers()[member].value();
-                this.setProperty(member, currentValue);
-            }
+            _.each(this.properties(), function (value, key) {
+                _this.setProperty(key, value);
+            });
         }
         UpdateMap.prototype.onChange = function () {
             // if the update map changes as a result of server changes (eg title changes) update the 
@@ -274,11 +274,11 @@ var Spiro;
             return new ErrorMap(map, statusCode, warnings);
         };
         UpdateMap.prototype.properties = function () {
-            var pps = {};
-            for (var p in this.attributes) {
-                pps[p] = new Value(this.attributes[p].value);
-            }
-            return pps;
+            //var pps = {};
+            //for (var p in this.attributes) {
+            //    pps[p] = new Value(this.attributes[p].value);
+            //}
+            return _.mapObject(this.attributes, function (v) { return new Value(v.value); });
         };
         UpdateMap.prototype.setProperty = function (name, value) {
             value.set(this.attributes, name);

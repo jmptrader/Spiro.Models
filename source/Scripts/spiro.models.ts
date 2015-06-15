@@ -72,7 +72,7 @@ module Spiro {
 
         private decomposeRel() {
 
-            var postFix: string;
+            let postFix: string;
 
             if (this.asString.substring(0, 3) === "urn") {
                 // namespaced 
@@ -83,7 +83,7 @@ module Spiro {
                 postFix = this.asString;
             }
 
-            var splitPostFix = postFix.split(";");
+            let splitPostFix = postFix.split(";");
 
             this.uniqueValue = splitPostFix[0];
 
@@ -336,10 +336,9 @@ module Spiro {
 
             domainObject.updateLink().copyToHateoasModel(this);
 
-            for (var member in this.properties()) {
-                var currentValue = domainObject.propertyMembers()[member].value();
-                this.setProperty(member, currentValue);
-            }
+            _.each(this.properties(), (value, key) => {
+                this.setProperty(key, value);
+            });
         }
 
         onChange() {
@@ -353,13 +352,13 @@ module Spiro {
         }
 
         properties(): IValueMap {
-            var pps = {};
+            //var pps = {};
 
-            for (var p in this.attributes) {
-                pps[p] = new Value(this.attributes[p].value);
-            }
+            //for (var p in this.attributes) {
+            //    pps[p] = new Value(this.attributes[p].value);
+            //}
 
-            return <IValueMap>pps;
+            return <IValueMap>_.mapObject(this.attributes,(v) => new Value(v.value));
         }
 
         setProperty(name: string, value: Value) {
