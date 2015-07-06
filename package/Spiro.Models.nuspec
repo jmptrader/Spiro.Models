@@ -14,8 +14,8 @@
     <description>A set of TypeScript/JavaScript classes corresponding to the representations defined in the Restful Objects specification.</description>
     <tags>restfulobjects restful objects nakedobjects naked javascript typescript</tags>
     <dependencies>
-      <dependency id="underscore.js" version="1.6.0" />
-      <dependency id="underscore.TypeScript.DefinitelyTyped" version="0.4.3" />
+      <dependency id="lodash" version="3.10.0" />
+      <dependency id="lodash.TypeScript.DefinitelyTyped" version="0.4.4" />
     </dependencies>
   </metadata>
 </package>

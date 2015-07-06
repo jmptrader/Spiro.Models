@@ -24,19 +24,19 @@
     <TypeScriptCompile Include="Scripts\spiro.models.shims.ts" />
     <TypeScriptCompile Include="Scripts\spiro.models.ts" />
     <Content Include="GruntFile.js" />
+    <Content Include="Scripts\lodash.js" />
+    <Content Include="Scripts\lodash.min.js" />
     <Content Include="Scripts\spiro.config.js" />
     <Content Include="Scripts\spiro.models.helpers.js" />
     <Content Include="Scripts\spiro.models.js" />
     <Content Include="Scripts\spiro.models.shims.js" />
-    <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <TypeScriptCompile Include="Scripts\typings\lodash\lodash.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="package.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

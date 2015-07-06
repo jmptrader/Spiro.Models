@@ -17,7 +17,7 @@ var __extends = this.__extends || function (d, b) {
 // spiro.models defines a set of classes that correspond directly to the JSON representations returned by Restful Objects
 // resources.  These classes provide convenient methods for navigating the contents of those representations, and for
 // following links to other resources.
-/// <reference path="typings/underscore/underscore.d.ts" />
+/// <reference path="typings/lodash/lodash.d.ts" />
 /// <reference path="spiro.models.shims.ts" />
 /// <reference path="spiro.config.ts" />
 var Spiro;
@@ -109,16 +109,10 @@ var Spiro;
             return this.wrapped == null;
         };
         Value.prototype.link = function () {
-            if (this.isReference()) {
-                return this.wrapped;
-            }
-            return null;
+            return this.isReference() ? this.wrapped : null;
         };
         Value.prototype.scalar = function () {
-            if (this.isReference()) {
-                return null;
-            }
-            return this.wrapped;
+            return this.isReference() ? null : this.wrapped;
         };
         Value.prototype.list = function () {
             if (this.isList()) {
@@ -279,7 +273,7 @@ var Spiro;
             //for (var p in this.attributes) {
             //    pps[p] = new Value(this.attributes[p].value);
             //}
-            return _.mapObject(this.attributes, function (v) { return new Value(v.value); });
+            return _.mapValues(this.attributes, function (v) { return new Value(v.value); });
         };
         UpdateMap.prototype.setProperty = function (name, value) {
             value.set(this.attributes, name);

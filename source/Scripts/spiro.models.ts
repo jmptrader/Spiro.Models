@@ -13,7 +13,7 @@
 // resources.  These classes provide convenient methods for navigating the contents of those representations, and for
 // following links to other resources.
 
-/// <reference path="typings/underscore/underscore.d.ts" />
+/// <reference path="typings/lodash/lodash.d.ts" />
 /// <reference path="spiro.models.shims.ts" />
 /// <reference path="spiro.config.ts" />
 
@@ -108,7 +108,7 @@ module Spiro {
 
         private decomposeMediaType() {
 
-            var parms = this.asString.split(";");
+            let parms = this.asString.split(";");
 
             if (parms.length > 0) {
                 this.applicationType = parms[0];
@@ -160,17 +160,11 @@ module Spiro {
         }
 
         link(): Link {
-            if (this.isReference()) {
-                return <Link>this.wrapped;
-            }
-            return null;
+            return this.isReference() ? <Link>this.wrapped : null;
         }
 
         scalar(): Object {
-            if (this.isReference()) {
-                return null;
-            }
-            return this.wrapped;
+            return this.isReference() ? null : this.wrapped;
         }
 
         list(): Value[] {
@@ -356,7 +350,7 @@ module Spiro {
             //    pps[p] = new Value(this.attributes[p].value);
             //}
 
-            return <IValueMap>_.mapObject(this.attributes, (v : any) => new Value(v.value));
+            return <IValueMap>_.mapValues(this.attributes, (v : any) => new Value(v.value));
         }
 
         setProperty(name: string, value: Value) {
@@ -655,6 +649,7 @@ module Spiro {
                     var parameter = new Parameter(parameters[m], this);
                     this.parameterMap[m] = parameter;
                 }
+
             }
         }
 
@@ -1459,7 +1454,7 @@ module Spiro {
 
         getDomainServices(): DomainServicesRepresentation {
             // cannot use getTarget here as that will just return a ListRepresentation 
-            var domainServices = new DomainServicesRepresentation();
+            let domainServices = new DomainServicesRepresentation();
             this.serviceLink().copyToHateoasModel(domainServices);
             return domainServices;
         }
@@ -1510,8 +1505,8 @@ module Spiro {
         }
 
         private getHateoasTarget(targetType): IHateoasModel {
-            var matchingType = this.repTypeToModel[targetType];
-            var target: IHateoasModel = new matchingType({});
+            let matchingType = this.repTypeToModel[targetType];
+            let target: IHateoasModel = new matchingType({});
             return target;
         }
 
@@ -1531,7 +1526,7 @@ module Spiro {
 
         // get the object that this link points to 
         getTarget(): IHateoasModel {
-            var target = this.getHateoasTarget(this.type().representationType);
+            let target = this.getHateoasTarget(this.type().representationType);
             this.copyToHateoasModel(target);
             return target;
         }
