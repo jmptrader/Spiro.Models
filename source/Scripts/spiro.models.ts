@@ -641,14 +641,16 @@ module Spiro {
         private initParameterMap(): void {
 
             if (!this.parameterMap) {
-                this.parameterMap = {};
+                //this.parameterMap = {};
 
                 var parameters = this.get("parameters");
 
-                for (var m in parameters) {
-                    var parameter = new Parameter(parameters[m], this);
-                    this.parameterMap[m] = parameter;
-                }
+                //for (var m in parameters) {
+                //    var parameter = new Parameter(parameters[m], this);
+                //    this.parameterMap[m] = parameter;
+                //}
+
+                this.parameterMap = _.mapValues(parameters, (p) => new Parameter(p, this));
 
             }
         }
@@ -963,6 +965,8 @@ module Spiro {
             for (var v in map.attributes) {
                 this.wrapped[v] = map.attributes[v];
             }
+
+
         }
 
         getModifyMap(id: string): ModifyMapv11 {
