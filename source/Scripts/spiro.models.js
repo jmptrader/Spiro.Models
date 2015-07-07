@@ -785,9 +785,10 @@ var Spiro;
             return this.modifyLink().arguments();
         };
         PropertyMember.prototype.setFromModifyMap = function (map) {
-            for (var v in map.attributes) {
-                this.wrapped[v] = map.attributes[v];
-            }
+            var _this = this;
+            _.forOwn(map.attributes, function (v, k) {
+                _this.wrapped[k] = v;
+            });
         };
         PropertyMember.prototype.getModifyMap = function (id) {
             if (this.modifyLink()) {
@@ -907,24 +908,12 @@ var Spiro;
             return this.get("extensions");
         };
         DomainObjectRepresentation.prototype.resetMemberMaps = function () {
-            this.memberMap = {};
-            this.propertyMemberMap = {};
-            this.collectionMemberMap = {};
-            this.actionMemberMap = {};
+            var _this = this;
             var members = this.get("members");
-            for (var m in members) {
-                var member = Member.wrapMember(members[m], this);
-                this.memberMap[m] = member;
-                if (member.memberType() === "property") {
-                    this.propertyMemberMap[m] = member;
-                }
-                else if (member.memberType() === "collection") {
-                    this.collectionMemberMap[m] = member;
-                }
-                else if (member.memberType() === "action") {
-                    this.actionMemberMap[m] = member;
-                }
-            }
+            this.memberMap = _.mapValues(members, function (m) { return Member.wrapMember(m, _this); });
+            this.propertyMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "property"; });
+            this.collectionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "collection"; });
+            this.actionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "action"; });
         };
         DomainObjectRepresentation.prototype.initMemberMaps = function () {
             if (!this.memberMap) {

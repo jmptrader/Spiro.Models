@@ -961,12 +961,9 @@ module Spiro {
         }
 
         setFromModifyMap(map: ModifyMapv11) {
-
-            for (var v in map.attributes) {
-                this.wrapped[v] = map.attributes[v];
-            }
-
-
+            _.forOwn(map.attributes, (v, k) => {
+                this.wrapped[k] = v;
+            });
         }
 
         getModifyMap(id: string): ModifyMapv11 {
@@ -1135,25 +1132,12 @@ module Spiro {
         private actionMemberMap: IActionMemberMap;
 
         private resetMemberMaps() {
-            this.memberMap = {};
-            this.propertyMemberMap = {};
-            this.collectionMemberMap = {};
-            this.actionMemberMap = {};
-
             var members = this.get("members");
 
-            for (var m in members) {
-                var member = Member.wrapMember(members[m], this);
-                this.memberMap[m] = member;
-
-                if (member.memberType() === "property") {
-                    this.propertyMemberMap[m] = <PropertyMember> member;
-                } else if (member.memberType() === "collection") {
-                    this.collectionMemberMap[m] = <CollectionMember> member;
-                } else if (member.memberType() === "action") {
-                    this.actionMemberMap[m] = <ActionMember> member;
-                }
-            }
+            this.memberMap = _.mapValues(members, (m) => Member.wrapMember(m, this));
+            this.propertyMemberMap = <IPropertyMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "property");
+            this.collectionMemberMap = <ICollectionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "collection");
+            this.actionMemberMap = <IActionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "action");
         }
 
         private initMemberMaps() {
