@@ -568,12 +568,9 @@ module Spiro {
                 return  <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
 
-            let ch = this.wrapped.choices;
-            if (ch) {
-                return _.mapValues(ch, (item) => new Value(item));
-
-                //var values = _.map(this.wrapped.choices, (item) => new Value(item));
-                //return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
+            if (this.wrapped.choices) {
+                var values = _.map(this.wrapped.choices, (item) => new Value(item));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -704,10 +701,8 @@ module Spiro {
 
             var ch = this.get("choices");
             if (ch) {
-                return _.mapValues(ch, (item) => new Value(item));
-
-                //var values = _.map(ch, (item) => new Value(item));
-                //return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
+                var values = _.map(ch, (item) => new Value(item));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }
@@ -1028,8 +1023,8 @@ module Spiro {
 
             var ch = this.wrapped.choices;
             if (ch) {
-                return _.mapValues(ch, (item) => new Value(item));
-                //return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
+                var values = _.map(ch, (item) => new Value(item));
+                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
         }

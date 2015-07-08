@@ -462,9 +462,9 @@ var Spiro;
             if (this.extensions()["x-ro-nof-choices"]) {
                 return _.mapValues(this.extensions()["x-ro-nof-choices"], function (v) { return new Value(v); });
             }
-            var ch = this.wrapped.choices;
-            if (ch) {
-                return _.mapValues(ch, function (item) { return new Value(item); });
+            if (this.wrapped.choices) {
+                var values = _.map(this.wrapped.choices, function (item) { return new Value(item); });
+                return _.object(_.map(values, function (v) { return [v.toString(), v]; }));
             }
             return null;
         };
@@ -565,7 +565,8 @@ var Spiro;
         PromptRepresentation.prototype.choices = function () {
             var ch = this.get("choices");
             if (ch) {
-                return _.mapValues(ch, function (item) { return new Value(item); });
+                var values = _.map(ch, function (item) { return new Value(item); });
+                return _.object(_.map(values, function (v) { return [v.toString(), v]; }));
             }
             return null;
         };
@@ -831,7 +832,8 @@ var Spiro;
             }
             var ch = this.wrapped.choices;
             if (ch) {
-                return _.mapValues(ch, function (item) { return new Value(item); });
+                var values = _.map(ch, function (item) { return new Value(item); });
+                return _.object(_.map(values, function (v) { return [v.toString(), v]; }));
             }
             return null;
         };
