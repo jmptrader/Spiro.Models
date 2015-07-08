@@ -459,9 +459,8 @@ var Spiro;
         // properties 
         Parameter.prototype.choices = function () {
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
+                return _.mapValues(this.extensions()["x-ro-nof-choices"], function (v) { return new Value(v); });
             }
             if (this.wrapped.choices) {
                 var values = _.map(this.wrapped.choices, function (item) { return new Value(item); });
@@ -706,9 +705,8 @@ var Spiro;
         };
         PropertyRepresentation.prototype.choices = function () {
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
+                return _.mapValues(this.extensions()["x-ro-nof-choices"], function (v) { return new Value(v); });
             }
             var ch = this.get("choices");
             if (ch) {
@@ -829,9 +827,8 @@ var Spiro;
         };
         PropertyMember.prototype.choices = function () {
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object(_.map(this.extensions()["x-ro-nof-choices"], function (v, key) { return [key, new Value(v)]; }));
+                return _.mapValues(this.extensions()["x-ro-nof-choices"], function (v) { return new Value(v); });
             }
             var ch = this.wrapped.choices;
             if (ch) {
@@ -974,10 +971,9 @@ var Spiro;
             return new UpdateMap(this, this.updateMap());
         };
         DomainObjectRepresentation.prototype.setFromUpdateMap = function (map) {
-            for (var member in this.members()) {
-                var m = this.members()[member];
-                m.update(map.attributes["members"][member]);
-            }
+            _.forOwn(this.members(), function (m, k) {
+                m.update(map.attributes.members[k]);
+            });
             // to trigger an update on the domainobject
             this.set(map.attributes);
         };

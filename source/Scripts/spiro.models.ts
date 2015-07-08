@@ -50,6 +50,7 @@ module Spiro {
         memberOrder: number;
         isService: boolean;
         minLength: number;
+        "x-ro-nof-choices" : Object;
     }
 
     export interface IOptionalCapabilities {
@@ -563,9 +564,8 @@ module Spiro {
         choices(): IValueMap {
 
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
+                return  <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
 
             if (this.wrapped.choices) {
@@ -866,9 +866,8 @@ module Spiro {
         choices(): IValueMap {
 
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
+                return <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
 
             var ch = this.get("choices");
@@ -1018,9 +1017,8 @@ module Spiro {
         choices(): IValueMap {
 
             // use custom choices extension by preference 
-            // todo wrap extensions 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return _.object<IValueMap>(_.map(<_.Dictionary<Object>>this.extensions()["x-ro-nof-choices"], (v, key) => [key, new Value(v)]));
+                return <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
 
             var ch = this.wrapped.choices;
@@ -1216,10 +1214,10 @@ module Spiro {
         }
 
         setFromUpdateMap(map: UpdateMap) {
-            for (var member in this.members()) {
-                var m = this.members()[member];
-                m.update(map.attributes["members"][member]);
-            }
+
+            _.forOwn(this.members(), (m, k) => {
+                m.update(map.attributes.members[k]);
+            });
 
             // to trigger an update on the domainobject
             this.set(map.attributes);
