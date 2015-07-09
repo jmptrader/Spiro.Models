@@ -345,12 +345,6 @@ module Spiro {
         }
 
         properties(): IValueMap {
-            //var pps = {};
-
-            //for (var p in this.attributes) {
-            //    pps[p] = new Value(this.attributes[p].value);
-            //}
-
             return <IValueMap>_.mapValues(this.attributes, (v : any) => new Value(v.value));
         }
 
@@ -477,7 +471,7 @@ module Spiro {
 
         models: Link[];
 
-        parse(response) {
+        parse(response : any) {
             return response.value;
         }
 
@@ -503,7 +497,7 @@ module Spiro {
     // REPRESENTATIONS
 
     export class ResourceRepresentation extends HateoasModelBase {
-        constructor(object?) {
+        constructor(object? : any) {
             super(object);
         }
 
@@ -523,7 +517,7 @@ module Spiro {
 
     export class ActionResultRepresentation extends ResourceRepresentation {
 
-        constructor(object?) {
+        constructor(object? : any) {
             super(object);
         }
 
@@ -556,7 +550,7 @@ module Spiro {
 
     // matches 18.2.1
     export class Parameter extends NestedRepresentation {
-        constructor(wrapped, public parent: ActionRepresentation) {
+        constructor(wrapped : any, public parent: ActionRepresentation) {
             super(wrapped);
         }
 
@@ -565,12 +559,12 @@ module Spiro {
 
             // use custom choices extension by preference 
             if (this.extensions()["x-ro-nof-choices"]) {
-                return  <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
+                return  <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v : any) => new Value(v));
             }
 
             if (this.wrapped.choices) {
-                var values = _.map(this.wrapped.choices, (item) => new Value(item));
-                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
+                var values = _.map(this.wrapped.choices, (item : any) => new Value(item));
+                return _.object<IValueMap>(_.map(values, (v : any) => [v.toString(), v]));
             }
             return null;
         }
@@ -589,7 +583,8 @@ module Spiro {
 
         // helper
         isScalar(): boolean {
-            return isScalarType(this.extensions().returnType) || (isListType(this.extensions().returnType) && isScalarType(this.extensions().elementType));
+            return isScalarType(this.extensions().returnType) ||
+                   (isListType(this.extensions().returnType) && isScalarType(this.extensions().elementType));
         }
 
         hasPrompt(): boolean {
@@ -641,17 +636,8 @@ module Spiro {
         private initParameterMap(): void {
 
             if (!this.parameterMap) {
-                //this.parameterMap = {};
-
                 var parameters = this.get("parameters");
-
-                //for (var m in parameters) {
-                //    var parameter = new Parameter(parameters[m], this);
-                //    this.parameterMap[m] = parameter;
-                //}
-
-                this.parameterMap = _.mapValues(parameters, (p) => new Parameter(p, this));
-
+                this.parameterMap = _.mapValues(parameters, (p : any) => new Parameter(p, this));
             }
         }
 
@@ -701,8 +687,8 @@ module Spiro {
 
             var ch = this.get("choices");
             if (ch) {
-                var values = _.map(ch, (item) => new Value(item));
-                return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
+                var values = _.map(ch, (item : any) => new Value(item));
+                return _.object<IValueMap>(_.map(values, (v : Value) => [v.toString(), v]));
             }
             return null;
         }

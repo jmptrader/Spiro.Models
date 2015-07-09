@@ -269,10 +269,6 @@ var Spiro;
             return new ErrorMap(map, statusCode, warnings);
         };
         UpdateMap.prototype.properties = function () {
-            //var pps = {};
-            //for (var p in this.attributes) {
-            //    pps[p] = new Value(this.attributes[p].value);
-            //}
             return _.mapValues(this.attributes, function (v) { return new Value(v.value); });
         };
         UpdateMap.prototype.setProperty = function (name, value) {
@@ -479,7 +475,8 @@ var Spiro;
         };
         // helper
         Parameter.prototype.isScalar = function () {
-            return isScalarType(this.extensions().returnType) || (isListType(this.extensions().returnType) && isScalarType(this.extensions().elementType));
+            return isScalarType(this.extensions().returnType) ||
+                (isListType(this.extensions().returnType) && isScalarType(this.extensions().elementType));
         };
         Parameter.prototype.hasPrompt = function () {
             return !!this.promptLink();
@@ -519,12 +516,7 @@ var Spiro;
         ActionRepresentation.prototype.initParameterMap = function () {
             var _this = this;
             if (!this.parameterMap) {
-                //this.parameterMap = {};
                 var parameters = this.get("parameters");
-                //for (var m in parameters) {
-                //    var parameter = new Parameter(parameters[m], this);
-                //    this.parameterMap[m] = parameter;
-                //}
                 this.parameterMap = _.mapValues(parameters, function (p) { return new Parameter(p, _this); });
             }
         };
