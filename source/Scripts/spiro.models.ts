@@ -550,7 +550,8 @@ module Spiro {
 
     // matches 18.2.1
     export class Parameter extends NestedRepresentation {
-        constructor(wrapped : any, public parent: ActionRepresentation) {
+        // fix parent type
+        constructor(wrapped : any, public parent: any) {
             super(wrapped);
         }
 
@@ -1056,6 +1057,39 @@ module Spiro {
         getDetails(): ActionRepresentation {
             return <ActionRepresentation> this.detailsLink().getTarget();
         }
+
+        // 1.1 inlined 
+
+
+        invokeLink(): Link {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/invoke");
+        }
+
+
+        getInvoke(): ActionResultRepresentation {
+            return <ActionResultRepresentation> this.invokeLink().getTarget();
+        }
+
+        // properties 
+
+        private parameterMap: IParameterMap;
+
+        private initParameterMap(): void {
+
+            if (!this.parameterMap) {
+                var parameters = this.wrapped.parameters;
+                this.parameterMap = _.mapValues(parameters, (p: any) => new Parameter(p, this));
+            }
+        }
+
+        parameters(): IParameterMap {
+            this.initParameterMap();
+            return this.parameterMap;
+        }
+
+        disabledReason(): string {
+            return this.wrapped.disabledReason;
+        }
     }
 
     export interface IMemberMap {
@@ -1220,6 +1254,84 @@ module Spiro {
         }
     }
 
+    export class MenuRepresentation extends ResourceRepresentation {
+
+        constructor(object?) {
+            super(object);
+            this.url = this.getUrl;
+        }
+
+        getUrl(): string {
+            return this.hateoasUrl || this.selfLink().href();
+        }
+
+        title(): string {
+            return this.get("title");
+        }
+
+       
+        links(): Links {
+            return Links.wrapLinks(this.get("links"));
+        }
+
+        extensions(): IExtensions {
+            return this.get("extensions");
+        }
+
+        private memberMap: IMemberMap;
+      
+        private actionMemberMap: IActionMemberMap;
+
+        private resetMemberMaps() {
+            var members = this.get("members");
+
+            this.memberMap = _.mapValues(members, (m) => Member.wrapMember(m, this));
+            this.actionMemberMap = <IActionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "action");
+        }
+
+        private initMemberMaps() {
+            if (!this.memberMap) {
+                this.resetMemberMaps();
+            }
+        }
+
+        members(): IMemberMap {
+            this.initMemberMaps();
+            return this.memberMap;
+        }
+
+
+        actionMembers(): IActionMemberMap {
+            this.initMemberMaps();
+            return this.actionMemberMap;
+        }
+
+        member(id: string): Member {
+            return this.members()[id];
+        }
+
+
+        actionMember(id: string): ActionMember {
+            return this.actionMembers()[id];
+        }
+
+
+        selfLink(): Link {
+            return this.links().linkByRel("self");
+        }
+   
+        // linked representations 
+        getSelf(): MenuRepresentation {
+            return <MenuRepresentation> this.selfLink().getTarget();
+        }
+
+        preFetch() {
+            this.memberMap = null; // to ensure everything gets reset
+        }
+    }
+
+
+
     // matches scalar representation 12.0 
     export class ScalarValueRepresentation extends NestedRepresentation {
         constructor(wrapped) {
@@ -1354,6 +1466,26 @@ module Spiro {
         }
     }
 
+    // custom
+    export class MenusRepresentation extends ListRepresentation {
+
+        // links
+        upLink(): Link {
+            return this.links().linkByRel("up");
+        }
+
+        // linked representations 
+        getSelf(): MenusRepresentation {
+            return <MenusRepresentation> this.selfLink().getTarget();
+        }
+
+        getUp(): HomePageRepresentation {
+            return <HomePageRepresentation> this.upLink().getTarget();
+        }
+    }
+
+
+
     // matches the user representation 6.0
     export class UserRepresentation extends ResourceRepresentation {
 
@@ -1415,6 +1547,11 @@ module Spiro {
             return this.links().linkByRel("urn:org.restfulobjects:rels/version");
         }
 
+        // custom 
+        menusLink(): Link {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/menus");
+        }
+
         // linked representations 
         getSelf(): HomePageRepresentation {
             return <HomePageRepresentation> this.selfLink().getTarget();
@@ -1434,6 +1571,16 @@ module Spiro {
         getVersion(): VersionRepresentation {
             return <VersionRepresentation> this.versionLink().getTarget();
         }
+
+        //  custom 
+
+        getMenus(): MenusRepresentation {
+            // cannot use getTarget here as that will just return a ListRepresentation 
+            let menus = new MenusRepresentation();
+            this.menusLink().copyToHateoasModel(menus);
+            return menus;
+        }
+
     }
 
     // matches the Link representation 2.7
@@ -1493,7 +1640,9 @@ module Spiro {
             "object-action": ActionRepresentation,
             "action-result": ActionResultRepresentation,
             "error": ErrorRepresentation,
-            "prompt": PromptRepresentation
+            "prompt": PromptRepresentation,
+            // custom 
+            "menu": MenuRepresentation
         }
 
         // get the object that this link points to 

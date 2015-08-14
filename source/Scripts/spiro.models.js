@@ -7,7 +7,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -448,6 +448,7 @@ var Spiro;
     // matches 18.2.1
     var Parameter = (function (_super) {
         __extends(Parameter, _super);
+        // fix parent type
         function Parameter(wrapped, parent) {
             _super.call(this, wrapped);
             this.parent = parent;
@@ -866,6 +867,27 @@ var Spiro;
         ActionMember.prototype.getDetails = function () {
             return this.detailsLink().getTarget();
         };
+        // 1.1 inlined 
+        ActionMember.prototype.invokeLink = function () {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/invoke");
+        };
+        ActionMember.prototype.getInvoke = function () {
+            return this.invokeLink().getTarget();
+        };
+        ActionMember.prototype.initParameterMap = function () {
+            var _this = this;
+            if (!this.parameterMap) {
+                var parameters = this.wrapped.parameters;
+                this.parameterMap = _.mapValues(parameters, function (p) { return new Parameter(p, _this); });
+            }
+        };
+        ActionMember.prototype.parameters = function () {
+            this.initParameterMap();
+            return this.parameterMap;
+        };
+        ActionMember.prototype.disabledReason = function () {
+            return this.wrapped.disabledReason;
+        };
         return ActionMember;
     })(Member);
     Spiro.ActionMember = ActionMember;
@@ -980,6 +1002,62 @@ var Spiro;
         return DomainObjectRepresentation;
     })(ResourceRepresentation);
     Spiro.DomainObjectRepresentation = DomainObjectRepresentation;
+    var MenuRepresentation = (function (_super) {
+        __extends(MenuRepresentation, _super);
+        function MenuRepresentation(object) {
+            _super.call(this, object);
+            this.url = this.getUrl;
+        }
+        MenuRepresentation.prototype.getUrl = function () {
+            return this.hateoasUrl || this.selfLink().href();
+        };
+        MenuRepresentation.prototype.title = function () {
+            return this.get("title");
+        };
+        MenuRepresentation.prototype.links = function () {
+            return Links.wrapLinks(this.get("links"));
+        };
+        MenuRepresentation.prototype.extensions = function () {
+            return this.get("extensions");
+        };
+        MenuRepresentation.prototype.resetMemberMaps = function () {
+            var _this = this;
+            var members = this.get("members");
+            this.memberMap = _.mapValues(members, function (m) { return Member.wrapMember(m, _this); });
+            this.actionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "action"; });
+        };
+        MenuRepresentation.prototype.initMemberMaps = function () {
+            if (!this.memberMap) {
+                this.resetMemberMaps();
+            }
+        };
+        MenuRepresentation.prototype.members = function () {
+            this.initMemberMaps();
+            return this.memberMap;
+        };
+        MenuRepresentation.prototype.actionMembers = function () {
+            this.initMemberMaps();
+            return this.actionMemberMap;
+        };
+        MenuRepresentation.prototype.member = function (id) {
+            return this.members()[id];
+        };
+        MenuRepresentation.prototype.actionMember = function (id) {
+            return this.actionMembers()[id];
+        };
+        MenuRepresentation.prototype.selfLink = function () {
+            return this.links().linkByRel("self");
+        };
+        // linked representations 
+        MenuRepresentation.prototype.getSelf = function () {
+            return this.selfLink().getTarget();
+        };
+        MenuRepresentation.prototype.preFetch = function () {
+            this.memberMap = null; // to ensure everything gets reset
+        };
+        return MenuRepresentation;
+    })(ResourceRepresentation);
+    Spiro.MenuRepresentation = MenuRepresentation;
     // matches scalar representation 12.0 
     var ScalarValueRepresentation = (function (_super) {
         __extends(ScalarValueRepresentation, _super);
@@ -1106,6 +1184,26 @@ var Spiro;
         return DomainServicesRepresentation;
     })(ListRepresentation);
     Spiro.DomainServicesRepresentation = DomainServicesRepresentation;
+    // custom
+    var MenusRepresentation = (function (_super) {
+        __extends(MenusRepresentation, _super);
+        function MenusRepresentation() {
+            _super.apply(this, arguments);
+        }
+        // links
+        MenusRepresentation.prototype.upLink = function () {
+            return this.links().linkByRel("up");
+        };
+        // linked representations 
+        MenusRepresentation.prototype.getSelf = function () {
+            return this.selfLink().getTarget();
+        };
+        MenusRepresentation.prototype.getUp = function () {
+            return this.upLink().getTarget();
+        };
+        return MenusRepresentation;
+    })(ListRepresentation);
+    Spiro.MenusRepresentation = MenusRepresentation;
     // matches the user representation 6.0
     var UserRepresentation = (function (_super) {
         __extends(UserRepresentation, _super);
@@ -1162,6 +1260,10 @@ var Spiro;
         HomePageRepresentation.prototype.versionLink = function () {
             return this.links().linkByRel("urn:org.restfulobjects:rels/version");
         };
+        // custom 
+        HomePageRepresentation.prototype.menusLink = function () {
+            return this.links().linkByRel("urn:org.restfulobjects:rels/menus");
+        };
         // linked representations 
         HomePageRepresentation.prototype.getSelf = function () {
             return this.selfLink().getTarget();
@@ -1177,6 +1279,13 @@ var Spiro;
         };
         HomePageRepresentation.prototype.getVersion = function () {
             return this.versionLink().getTarget();
+        };
+        //  custom 
+        HomePageRepresentation.prototype.getMenus = function () {
+            // cannot use getTarget here as that will just return a ListRepresentation 
+            var menus = new MenusRepresentation();
+            this.menusLink().copyToHateoasModel(menus);
+            return menus;
         };
         return HomePageRepresentation;
     })(ResourceRepresentation);
@@ -1197,7 +1306,9 @@ var Spiro;
                 "object-action": ActionRepresentation,
                 "action-result": ActionResultRepresentation,
                 "error": ErrorRepresentation,
-                "prompt": PromptRepresentation
+                "prompt": PromptRepresentation,
+                // custom 
+                "menu": MenuRepresentation
             };
         }
         Link.prototype.href = function () {
