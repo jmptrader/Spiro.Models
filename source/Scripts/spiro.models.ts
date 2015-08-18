@@ -61,12 +61,29 @@ module Spiro {
         validateOnly: string;
     }
 
+    export class RelParm {
+
+        name: string;
+        value : string;
+
+        constructor(public asString: string) {
+            this.decomposeParm()
+        }
+
+        private decomposeParm() {
+            let regex = /(\w+)\W+(\w+)\W+/
+            let result = regex.exec(this.asString);
+            [, this.name, this.value] = result
+        }
+    }
+
+
     // rel helper class 
     export class Rel {
 
         ns: string = "";
         uniqueValue: string;
-        parms: string[] = [];
+        parms: RelParm[] = [];
 
         constructor(public asString: string) {
             this.decomposeRel();
@@ -89,7 +106,7 @@ module Spiro {
             this.uniqueValue = splitPostFix[0];
 
             if (splitPostFix.length > 1) {
-                this.parms = splitPostFix.slice(1);
+                this.parms = _.map(splitPostFix.slice(1), (s) => new RelParm(s));
             }
         }
     }
@@ -908,7 +925,7 @@ module Spiro {
             return isScalarType(this.extensions().returnType);
         }
 
-        static wrapMember(toWrap, parent): Member {
+        static wrapMember(toWrap, parent, id): Member {
 
             if (toWrap.memberType === "property") {
                 return new PropertyMember(toWrap, parent);
@@ -919,7 +936,7 @@ module Spiro {
             }
 
             if (toWrap.memberType === "action") {
-                return new ActionMember(toWrap, parent);
+                return new ActionMember(toWrap, parent, id);
             }
 
             return null;
@@ -1050,8 +1067,12 @@ module Spiro {
 
     // matches 14.4.3 
     export class ActionMember extends Member {
-        constructor(wrapped, parent) {
+        constructor(wrapped, parent, private id : string) {
             super(wrapped, parent);
+        }
+
+        actionId(): string {
+            return this.id
         }
 
         getDetails(): ActionRepresentation {
@@ -1152,7 +1173,7 @@ module Spiro {
         private resetMemberMaps() {
             var members = this.get("members");
 
-            this.memberMap = _.mapValues(members, (m) => Member.wrapMember(m, this));
+            this.memberMap = _.mapValues(members, (m, id) => Member.wrapMember(m, this, id));
             this.propertyMemberMap = <IPropertyMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "property");
             this.collectionMemberMap = <ICollectionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "collection");
             this.actionMemberMap = <IActionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "action");
@@ -1285,7 +1306,7 @@ module Spiro {
         private resetMemberMaps() {
             var members = this.get("members");
 
-            this.memberMap = _.mapValues(members, (m) => Member.wrapMember(m, this));
+            this.memberMap = _.mapValues(members, (m, id) => Member.wrapMember(m, this, id));
             this.actionMemberMap = <IActionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "action");
         }
 
