@@ -50,8 +50,12 @@ module Spiro {
         memberOrder: number;
         isService: boolean;
         minLength: number;
+        // custom extensions with "x-ro-nof-" prefix 
+        // ReSharper disable InconsistentNaming
         "x-ro-nof-choices": Object;
         "x-ro-nof-menuPath": string;
+        "x-ro-nof-mask" : string;
+        // ReSharper restore InconsistentNaming
     }
 
     export interface IOptionalCapabilities {
