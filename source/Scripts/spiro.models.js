@@ -29,6 +29,19 @@ var Spiro;
     function isListType(typeName) {
         return typeName === "list";
     }
+    var RelParm = (function () {
+        function RelParm(asString) {
+            this.asString = asString;
+            this.decomposeParm();
+        }
+        RelParm.prototype.decomposeParm = function () {
+            var regex = /(\w+)\W+(\w+)\W+/;
+            var result = regex.exec(this.asString);
+            this.name = result[1], this.value = result[2];
+        };
+        return RelParm;
+    })();
+    Spiro.RelParm = RelParm;
     // rel helper class 
     var Rel = (function () {
         function Rel(asString) {
@@ -50,7 +63,7 @@ var Spiro;
             var splitPostFix = postFix.split(";");
             this.uniqueValue = splitPostFix[0];
             if (splitPostFix.length > 1) {
-                this.parms = splitPostFix.slice(1);
+                this.parms = _.map(splitPostFix.slice(1), function (s) { return new RelParm(s); });
             }
         };
         return Rel;
@@ -229,8 +242,7 @@ var Spiro;
             this.warningMessage = warningMessage;
         }
         ErrorMap.prototype.valuesMap = function () {
-            var vs = {};
-            // distinguish between value map and persist map 
+            var vs = {}; // distinguish between value map and persist map 
             var map = this.attributes.members ? this.attributes.members : this.attributes;
             for (var v in map) {
                 if (map[v].hasOwnProperty("value")) {
@@ -744,7 +756,7 @@ var Spiro;
         Member.prototype.isScalar = function () {
             return isScalarType(this.extensions().returnType);
         };
-        Member.wrapMember = function (toWrap, parent) {
+        Member.wrapMember = function (toWrap, parent, id) {
             if (toWrap.memberType === "property") {
                 return new PropertyMember(toWrap, parent);
             }
@@ -752,7 +764,7 @@ var Spiro;
                 return new CollectionMember(toWrap, parent);
             }
             if (toWrap.memberType === "action") {
-                return new ActionMember(toWrap, parent);
+                return new ActionMember(toWrap, parent, id);
             }
             return null;
         };
@@ -861,9 +873,13 @@ var Spiro;
     // matches 14.4.3 
     var ActionMember = (function (_super) {
         __extends(ActionMember, _super);
-        function ActionMember(wrapped, parent) {
+        function ActionMember(wrapped, parent, id) {
             _super.call(this, wrapped, parent);
+            this.id = id;
         }
+        ActionMember.prototype.actionId = function () {
+            return this.id;
+        };
         ActionMember.prototype.getDetails = function () {
             return this.detailsLink().getTarget();
         };
@@ -921,7 +937,7 @@ var Spiro;
         DomainObjectRepresentation.prototype.resetMemberMaps = function () {
             var _this = this;
             var members = this.get("members");
-            this.memberMap = _.mapValues(members, function (m) { return Member.wrapMember(m, _this); });
+            this.memberMap = _.mapValues(members, function (m, id) { return Member.wrapMember(m, _this, id); });
             this.propertyMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "property"; });
             this.collectionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "collection"; });
             this.actionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "action"; });
@@ -1023,7 +1039,7 @@ var Spiro;
         MenuRepresentation.prototype.resetMemberMaps = function () {
             var _this = this;
             var members = this.get("members");
-            this.memberMap = _.mapValues(members, function (m) { return Member.wrapMember(m, _this); });
+            this.memberMap = _.mapValues(members, function (m, id) { return Member.wrapMember(m, _this, id); });
             this.actionMemberMap = _.pick(this.memberMap, function (m) { return m.memberType() === "action"; });
         };
         MenuRepresentation.prototype.initMemberMaps = function () {

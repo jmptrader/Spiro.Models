@@ -50,7 +50,8 @@ module Spiro {
         memberOrder: number;
         isService: boolean;
         minLength: number;
-        "x-ro-nof-choices" : Object;
+        "x-ro-nof-choices": Object;
+        "x-ro-nof-menuPath": string;
     }
 
     export interface IOptionalCapabilities {
@@ -67,13 +68,13 @@ module Spiro {
         value : string;
 
         constructor(public asString: string) {
-            this.decomposeParm()
+            this.decomposeParm();
         }
 
         private decomposeParm() {
-            let regex = /(\w+)\W+(\w+)\W+/
-            let result = regex.exec(this.asString);
-            [, this.name, this.value] = result
+            const regex = /(\w+)\W+(\w+)\W+/;
+            const result = regex.exec(this.asString);
+            [, this.name, this.value] = result;
         }
     }
 
@@ -100,9 +101,7 @@ module Spiro {
             } else {
                 postFix = this.asString;
             }
-
-            let splitPostFix = postFix.split(";");
-
+            const splitPostFix = postFix.split(";");
             this.uniqueValue = splitPostFix[0];
 
             if (splitPostFix.length > 1) {
@@ -125,14 +124,12 @@ module Spiro {
         }
 
         private decomposeMediaType() {
-
-            let parms = this.asString.split(";");
-
+            const parms = this.asString.split(";");
             if (parms.length > 0) {
                 this.applicationType = parms[0];
             }
 
-            for (var i = 1; i < parms.length; i++) {
+            for (let i = 1; i < parms.length; i++) {
                 if (parms[i].trim().substring(0, 7) === "profile") {
                     this.profile = parms[i].trim();
                     const profileValue = (this.profile.split("=")[1].replace(/\"/g, "")).trim();
@@ -199,10 +196,9 @@ module Spiro {
                 return this.link().title();
             }
             if (this.isList()) {
-                var ss = _.map(this.list(), (v: any) => {
+                const ss = _.map(this.list(), (v: any) => {
                     return v.toString();
                 });
-
                 if (ss.length === 0) {
                     return "";
                 }
@@ -224,7 +220,7 @@ module Spiro {
 
         set(target: Object, name?: string) {
             if (name) {
-                var t = target[name] = {};
+                const t = target[name] = {};
                 this.set(t);
             } else {
                 if (this.isReference()) {
@@ -315,15 +311,12 @@ module Spiro {
         }
 
         valuesMap(): IErrorValueMap {
-            var vs: IErrorValueMap = {};
-
-            // distinguish between value map and persist map 
-            var map = this.attributes.members ? this.attributes.members : this.attributes;
-
-            for (var v in map) {
+            const vs: IErrorValueMap = {}; // distinguish between value map and persist map 
+            const map = this.attributes.members ? this.attributes.members : this.attributes;
+            for (let v in map) {
 
                 if (map[v].hasOwnProperty("value")) {
-                    var ev: IErrorValue = {
+                    const ev: IErrorValue = {
                         value: new Value(map[v].value),
                         invalidReason: map[v].invalidReason
                     };
@@ -373,9 +366,7 @@ module Spiro {
     export class AddToRemoveFromMap extends ArgumentMap implements IHateoasModel {
         constructor(private collectionResource: CollectionRepresentation, map: Object, add: boolean) {
             super(map, collectionResource, collectionResource.instanceId());
-
-            var link = add ? collectionResource.addToLink() : collectionResource.removeFromLink();
-
+            const link = add ? collectionResource.addToLink() : collectionResource.removeFromLink();
             link.copyToHateoasModel(this);
         }
 
@@ -493,7 +484,7 @@ module Spiro {
         }
 
         static wrapLinks(links: any): Links {
-            var ll = new Links();
+            const ll = new Links();
             ll.add(links);
             return ll;
         }
@@ -581,7 +572,7 @@ module Spiro {
             }
 
             if (this.wrapped.choices) {
-                var values = _.map(this.wrapped.choices, (item : any) => new Value(item));
+                const values = _.map(this.wrapped.choices, (item : any) => new Value(item));
                 return _.object<IValueMap>(_.map(values, (v : any) => [v.toString(), v]));
             }
             return null;
@@ -654,7 +645,7 @@ module Spiro {
         private initParameterMap(): void {
 
             if (!this.parameterMap) {
-                var parameters = this.get("parameters");
+                const parameters = this.get("parameters");
                 this.parameterMap = _.mapValues(parameters, (p : any) => new Parameter(p, this));
             }
         }
@@ -702,10 +693,9 @@ module Spiro {
         }
 
         choices(): IValueMap {
-
-            var ch = this.get("choices");
+            const ch = this.get("choices");
             if (ch) {
-                var values = _.map(ch, (item : any) => new Value(item));
+                const values = _.map(ch, (item : any) => new Value(item));
                 return _.object<IValueMap>(_.map(values, (v : Value) => [v.toString(), v]));
             }
             return null;
@@ -873,10 +863,9 @@ module Spiro {
             if (this.extensions()["x-ro-nof-choices"]) {
                 return <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
-
-            var ch = this.get("choices");
+            const ch = this.get("choices");
             if (ch) {
-                var values = _.map(ch, (item) => new Value(item));
+                const values = _.map(ch, (item) => new Value(item));
                 return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
@@ -1024,10 +1013,9 @@ module Spiro {
             if (this.extensions()["x-ro-nof-choices"]) {
                 return <IValueMap> _.mapValues(this.extensions()["x-ro-nof-choices"], (v) => new Value(v));
             }
-
-            var ch = this.wrapped.choices;
+            const ch = this.wrapped.choices;
             if (ch) {
-                var values = _.map(ch, (item) => new Value(item));
+                const values = _.map(ch, (item) => new Value(item));
                 return _.object<IValueMap>(_.map(values, (v) => [v.toString(), v]));
             }
             return null;
@@ -1044,10 +1032,8 @@ module Spiro {
         value(): DomainObjectRepresentation[] {
 
             if (this.wrapped.value && this.wrapped.value.length) {
-
-                var valueArray = [];
-
-                for (var i = 0; i < this.wrapped.value.length; i++) {
+                const valueArray = [];
+                for (let i = 0; i < this.wrapped.value.length; i++) {
                     valueArray[i] = new DomainObjectRepresentation(this.wrapped.value[i]);
                 }
 
@@ -1072,7 +1058,7 @@ module Spiro {
         }
 
         actionId(): string {
-            return this.id
+            return this.id;
         }
 
         getDetails(): ActionRepresentation {
@@ -1098,7 +1084,7 @@ module Spiro {
         private initParameterMap(): void {
 
             if (!this.parameterMap) {
-                var parameters = this.wrapped.parameters;
+                const parameters = this.wrapped.parameters;
                 this.parameterMap = _.mapValues(parameters, (p: any) => new Parameter(p, this));
             }
         }
@@ -1171,8 +1157,7 @@ module Spiro {
         private actionMemberMap: IActionMemberMap;
 
         private resetMemberMaps() {
-            var members = this.get("members");
-
+            const members = this.get("members");
             this.memberMap = _.mapValues(members, (m, id) => Member.wrapMember(m, this, id));
             this.propertyMemberMap = <IPropertyMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "property");
             this.collectionMemberMap = <ICollectionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "collection");
@@ -1304,8 +1289,7 @@ module Spiro {
         private actionMemberMap: IActionMemberMap;
 
         private resetMemberMaps() {
-            var members = this.get("members");
-
+            const members = this.get("members");
             this.memberMap = _.mapValues(members, (m, id) => Member.wrapMember(m, this, id));
             this.actionMemberMap = <IActionMemberMap> _.pick(this.memberMap, (m: Member) => m.memberType() === "action");
         }
@@ -1405,7 +1389,7 @@ module Spiro {
         }
 
         causedBy(): ErrorRepresentation {
-            var cb = this.get("causedBy");
+            const cb = this.get("causedBy");
             return cb ? new ErrorRepresentation(cb) : null;
         }
     }
@@ -1584,7 +1568,7 @@ module Spiro {
 
         getDomainServices(): DomainServicesRepresentation {
             // cannot use getTarget here as that will just return a ListRepresentation 
-            let domainServices = new DomainServicesRepresentation();
+            const domainServices = new DomainServicesRepresentation();
             this.serviceLink().copyToHateoasModel(domainServices);
             return domainServices;
         }
@@ -1597,7 +1581,7 @@ module Spiro {
 
         getMenus(): MenusRepresentation {
             // cannot use getTarget here as that will just return a ListRepresentation 
-            let menus = new MenusRepresentation();
+            const menus = new MenusRepresentation();
             this.menusLink().copyToHateoasModel(menus);
             return menus;
         }
@@ -1645,8 +1629,8 @@ module Spiro {
         }
 
         private getHateoasTarget(targetType): IHateoasModel {
-            let matchingType = this.repTypeToModel[targetType];
-            let target: IHateoasModel = new matchingType({});
+            const matchingType = this.repTypeToModel[targetType];
+            const target: IHateoasModel = new matchingType({});
             return target;
         }
 
@@ -1668,7 +1652,7 @@ module Spiro {
 
         // get the object that this link points to 
         getTarget(): IHateoasModel {
-            let target = this.getHateoasTarget(this.type().representationType);
+            const target = this.getHateoasTarget(this.type().representationType);
             this.copyToHateoasModel(target);
             return target;
         }
