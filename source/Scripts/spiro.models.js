@@ -758,10 +758,10 @@ var Spiro;
         };
         Member.wrapMember = function (toWrap, parent, id) {
             if (toWrap.memberType === "property") {
-                return new PropertyMember(toWrap, parent);
+                return new PropertyMember(toWrap, parent, id);
             }
             if (toWrap.memberType === "collection") {
-                return new CollectionMember(toWrap, parent);
+                return new CollectionMember(toWrap, parent, id);
             }
             if (toWrap.memberType === "action") {
                 return new ActionMember(toWrap, parent, id);
@@ -774,10 +774,14 @@ var Spiro;
     // matches 14.4.1
     var PropertyMember = (function (_super) {
         __extends(PropertyMember, _super);
-        function PropertyMember(wrapped, parent) {
+        function PropertyMember(wrapped, parent, id) {
             _super.call(this, wrapped, parent);
+            this.id = id;
         }
         // inlined 
+        PropertyMember.prototype.propertyId = function () {
+            return this.id;
+        };
         PropertyMember.prototype.modifyLink = function () {
             return this.links().linkByRel("urn:org.restfulobjects:rels/modify");
         };
@@ -848,9 +852,13 @@ var Spiro;
     // matches 14.4.2 
     var CollectionMember = (function (_super) {
         __extends(CollectionMember, _super);
-        function CollectionMember(wrapped, parent) {
+        function CollectionMember(wrapped, parent, id) {
             _super.call(this, wrapped, parent);
+            this.id = id;
         }
+        CollectionMember.prototype.collectionId = function () {
+            return this.id;
+        };
         CollectionMember.prototype.value = function () {
             return Links.wrapLinks(this.wrapped.value);
         };

@@ -921,11 +921,11 @@ module Spiro {
         static wrapMember(toWrap, parent, id): Member {
 
             if (toWrap.memberType === "property") {
-                return new PropertyMember(toWrap, parent);
+                return new PropertyMember(toWrap, parent, id);
             }
 
             if (toWrap.memberType === "collection") {
-                return new CollectionMember(toWrap, parent);
+                return new CollectionMember(toWrap, parent, id);
             }
 
             if (toWrap.memberType === "action") {
@@ -938,11 +938,15 @@ module Spiro {
 
     // matches 14.4.1
     export class PropertyMember extends Member {
-        constructor(wrapped, parent) {
+        constructor(wrapped, parent, private id : string) {
             super(wrapped, parent);
         }
 
         // inlined 
+
+        propertyId(): string {
+            return this.id;
+        }
 
         modifyLink(): Link {
             return this.links().linkByRel("urn:org.restfulobjects:rels/modify");
@@ -1029,8 +1033,12 @@ module Spiro {
 
     // matches 14.4.2 
     export class CollectionMember extends Member {
-        constructor(wrapped, parent) {
+        constructor(wrapped, parent, private id : string) {
             super(wrapped, parent);
+        }
+
+        collectionId(): string {
+            return this.id;
         }
 
         value(): Links {
