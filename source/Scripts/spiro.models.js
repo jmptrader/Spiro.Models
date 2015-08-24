@@ -397,7 +397,7 @@ var Spiro;
         };
         Links.wrapLinks = function (links) {
             var ll = new Links();
-            ll.add(links);
+            ll.add(links || []);
             return ll;
         };
         // returns first link of rel

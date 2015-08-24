@@ -488,8 +488,8 @@ module Spiro {
         }
 
         static wrapLinks(links: any): Links {
-            const ll = new Links();
-            ll.add(links);
+            const ll = new Links();       
+            ll.add(links || []);          
             return ll;
         }
 

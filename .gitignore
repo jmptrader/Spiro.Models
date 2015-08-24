@@ -8,3 +8,5 @@ source/Scripts/spiro.models.d.ts
 source/Scripts/spiro.models.helpers.d.ts
 source/Scripts/spiro.models.shims.d.ts
 source/Spiro.Models.csproj.user
+source/.vs/Spiro.Models/v14/.suo
+source/.vs/config/applicationhost.config
