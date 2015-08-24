@@ -852,14 +852,7 @@ var Spiro;
             _super.call(this, wrapped, parent);
         }
         CollectionMember.prototype.value = function () {
-            if (this.wrapped.value && this.wrapped.value.length) {
-                var valueArray = [];
-                for (var i = 0; i < this.wrapped.value.length; i++) {
-                    valueArray[i] = new DomainObjectRepresentation(this.wrapped.value[i]);
-                }
-                return valueArray;
-            }
-            return [];
+            return Links.wrapLinks(this.wrapped.value);
         };
         CollectionMember.prototype.size = function () {
             return this.wrapped.size;

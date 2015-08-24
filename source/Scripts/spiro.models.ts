@@ -1033,17 +1033,8 @@ module Spiro {
             super(wrapped, parent);
         }
 
-        value(): DomainObjectRepresentation[] {
-
-            if (this.wrapped.value && this.wrapped.value.length) {
-                const valueArray = [];
-                for (let i = 0; i < this.wrapped.value.length; i++) {
-                    valueArray[i] = new DomainObjectRepresentation(this.wrapped.value[i]);
-                }
-
-                return valueArray;
-            }
-            return [];
+        value(): Links {
+            return Links.wrapLinks(this.wrapped.value);
         }
 
         size(): number {
