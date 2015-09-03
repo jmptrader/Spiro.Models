@@ -461,10 +461,14 @@ var Spiro;
     var Parameter = (function (_super) {
         __extends(Parameter, _super);
         // fix parent type
-        function Parameter(wrapped, parent) {
+        function Parameter(wrapped, parent, id) {
             _super.call(this, wrapped);
             this.parent = parent;
+            this.id = id;
         }
+        Parameter.prototype.parameterId = function () {
+            return this.id;
+        };
         // properties 
         Parameter.prototype.choices = function () {
             // use custom choices extension by preference 
@@ -530,7 +534,7 @@ var Spiro;
             var _this = this;
             if (!this.parameterMap) {
                 var parameters = this.get("parameters");
-                this.parameterMap = _.mapValues(parameters, function (p) { return new Parameter(p, _this); });
+                this.parameterMap = _.mapValues(parameters, function (p, id) { return new Parameter(p, _this, id); });
             }
         };
         ActionRepresentation.prototype.parameters = function () {
@@ -895,7 +899,7 @@ var Spiro;
             var _this = this;
             if (!this.parameterMap) {
                 var parameters = this.wrapped.parameters;
-                this.parameterMap = _.mapValues(parameters, function (p) { return new Parameter(p, _this); });
+                this.parameterMap = _.mapValues(parameters, function (p, id) { return new Parameter(p, _this, id); });
             }
         };
         ActionMember.prototype.parameters = function () {

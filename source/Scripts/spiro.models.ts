@@ -563,8 +563,12 @@ module Spiro {
     // matches 18.2.1
     export class Parameter extends NestedRepresentation {
         // fix parent type
-        constructor(wrapped : any, public parent: any) {
+        constructor(wrapped : any, public parent: any, private id : string) {
             super(wrapped);
+        }
+
+        parameterId() {
+            return this.id;
         }
 
         // properties 
@@ -650,7 +654,7 @@ module Spiro {
 
             if (!this.parameterMap) {
                 const parameters = this.get("parameters");
-                this.parameterMap = _.mapValues(parameters, (p : any) => new Parameter(p, this));
+                this.parameterMap = _.mapValues(parameters, (p, id) => new Parameter(p, this, id));
             }
         }
 
@@ -1088,7 +1092,7 @@ module Spiro {
 
             if (!this.parameterMap) {
                 const parameters = this.wrapped.parameters;
-                this.parameterMap = _.mapValues(parameters, (p: any) => new Parameter(p, this));
+                this.parameterMap = _.mapValues(parameters, (p, id) => new Parameter(p, this, id));
             }
         }
 
