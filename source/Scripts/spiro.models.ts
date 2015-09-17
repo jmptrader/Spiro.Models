@@ -1494,9 +1494,12 @@ module Spiro {
         getUp(): HomePageRepresentation {
             return <HomePageRepresentation> this.upLink().getTarget();
         }
+
+        getMenu(menuId : string): MenuRepresentation {
+            const menuLink = _.find(this.value().models, model => model.rel().parms[0].value === menuId);
+            return <MenuRepresentation> menuLink.getTarget();
+        }
     }
-
-
 
     // matches the user representation 6.0
     export class UserRepresentation extends ResourceRepresentation {
