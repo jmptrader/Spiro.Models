@@ -1476,6 +1476,11 @@ module Spiro {
         getUp(): HomePageRepresentation {
             return <HomePageRepresentation> this.upLink().getTarget();
         }
+
+        getService(serviceType: string): DomainObjectRepresentation {
+            const serviceLink = _.find(this.value().models, model => model.rel().parms[0].value === serviceType);
+            return <DomainObjectRepresentation> serviceLink.getTarget();
+        }
     }
 
     // custom

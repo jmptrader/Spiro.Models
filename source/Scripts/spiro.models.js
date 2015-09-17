@@ -1202,6 +1202,10 @@ var Spiro;
         DomainServicesRepresentation.prototype.getUp = function () {
             return this.upLink().getTarget();
         };
+        DomainServicesRepresentation.prototype.getService = function (serviceType) {
+            var serviceLink = _.find(this.value().models, function (model) { return model.rel().parms[0].value === serviceType; });
+            return serviceLink.getTarget();
+        };
         return DomainServicesRepresentation;
     })(ListRepresentation);
     Spiro.DomainServicesRepresentation = DomainServicesRepresentation;
@@ -1221,6 +1225,10 @@ var Spiro;
         };
         MenusRepresentation.prototype.getUp = function () {
             return this.upLink().getTarget();
+        };
+        MenusRepresentation.prototype.getMenu = function (menuId) {
+            var menuLink = _.find(this.value().models, function (model) { return model.rel().parms[0].value === menuId; });
+            return menuLink.getTarget();
         };
         return MenusRepresentation;
     })(ListRepresentation);
